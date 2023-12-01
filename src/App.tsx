@@ -10,6 +10,8 @@ import {
 import { buildPyScript, testScript } from "./PyScriptUtils";
 import Button from '@mui/material/Button';
 import { DataGrid } from '@mui/x-data-grid';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid'
 
 function App() {
   let dispatch = useAppDispatch();
@@ -35,13 +37,16 @@ function App() {
 
   if (table.loaded) {
     return (
-      <div>
-        <Button variant="contained" onClick={() => dispatch(unloadTable())}>Unload</Button>
-        <DataGrid rows={rows} columns={columns} />
-
-        <hr />
-        {JSON.stringify(table.data, null, 2)}
-      </div>
+      <Grid container>
+        <Grid item xs={6}>
+           <Box height={"100vh"}  gap={20}>
+             <DataGrid rows={rows} columns={columns} />
+           </Box>
+        </Grid>
+        <Grid item xs={6}>
+           <Button variant="contained" onClick={() => dispatch(unloadTable())}>Unload</Button>
+        </Grid>
+     </Grid>
     );
   } else {
     return (
