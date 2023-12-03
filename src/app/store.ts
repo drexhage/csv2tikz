@@ -14,6 +14,9 @@ export const store = configureStore({
   reducer: {
     table: persistedTableReducer,
   },
+  middleware: getDefaultMiddleware => getDefaultMiddleware({
+    serializableCheck: false,
+  }),
 });
 
 export const persistor = persistStore(store)
