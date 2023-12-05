@@ -30,11 +30,18 @@ export const tableSlice = createSlice({
       state.data = [];
       state.loaded = false;
     },
+    updateCell: (
+      state,
+      action: PayloadAction<{ idx: number; column: string; value: any }>,
+    ) => {
+      state.data[action.payload.idx][action.payload.column] =
+        action.payload.value;
+    },
   },
 });
 
 export const selectTable = (state: RootState) => state.table;
 
-export const { loadTable, unloadTable } = tableSlice.actions;
+export const { loadTable, unloadTable, updateCell } = tableSlice.actions;
 
 export default tableSlice.reducer;

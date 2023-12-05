@@ -1,7 +1,7 @@
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { selectTable, unloadTable } from "../features/table/tableSlice";
 import { useEffect, useMemo, useState } from "react";
-import { Button, Card } from "@mui/material";
+import { Button, Card, Container, Divider, Grid, Toolbar } from "@mui/material";
 import ColumnSelection from "./ColumnSelection";
 import { Aggregate } from "vega-lite/build/src/aggregate";
 import { VegaLite } from "react-vega";
@@ -64,45 +64,62 @@ export default () => {
   };
 
   return (
-    <Card>
-      <VegaLite actions={false} spec={config} data={data} />
+    <div
+      style={{
+        display: "flex",
+        height: "100%",
+        flexDirection: "column",
+        justifyContent: "space-between",
+      }}
+    >
+      <Grid
+        container
+        alignContent="center"
+        justifyContent="center"
+        direction="column"
+      >
+        <Grid item xs={1}>
+          <VegaLite actions={false} spec={config} data={data} />
+        </Grid>
+      </Grid>
       <div>
-        <ColumnSelection
-          val={xField}
-          options={table.headers}
-          onChange={setXField}
-          fieldName={"X"}
-        />
-        <ColumnSelection
-          val={yField}
-          options={table.headers}
-          onChange={setYField}
-          fieldName={"Y"}
-        />
-        <ColumnSelection
-          val={colorField}
-          options={table.headers}
-          onChange={setColorField}
-          fieldName={"color"}
-        />
-        <ColumnSelection
-          val={yAggregate}
-          options={AGGREGATE_FUNCTIONS}
-          onChange={setAggregate(setYAggregate)}
-          fieldName={"Y-Aggregate"}
-        />
-        <ColumnSelection
-          val={xAggregate}
-          options={AGGREGATE_FUNCTIONS}
-          onChange={setAggregate(setXAggregate)}
-          fieldName={"X-Aggregate"}
-        />
+        <Divider />
+        <Toolbar>
+          <ColumnSelection
+            val={xField}
+            options={table.headers}
+            onChange={setXField}
+            fieldName={"X"}
+          />
+          <ColumnSelection
+            val={yField}
+            options={table.headers}
+            onChange={setYField}
+            fieldName={"Y"}
+          />
+          <ColumnSelection
+            val={colorField}
+            options={table.headers}
+            onChange={setColorField}
+            fieldName={"color"}
+          />
+          <ColumnSelection
+            val={yAggregate}
+            options={AGGREGATE_FUNCTIONS}
+            onChange={setAggregate(setYAggregate)}
+            fieldName={"Y-Aggregate"}
+          />
+          <ColumnSelection
+            val={xAggregate}
+            options={AGGREGATE_FUNCTIONS}
+            onChange={setAggregate(setXAggregate)}
+            fieldName={"X-Aggregate"}
+          />
+          <Button variant="contained" onClick={() => dispatch(unloadTable())}>
+            Unload
+          </Button>
+        </Toolbar>
       </div>
-      <div>
-        <Button variant="contained" onClick={() => dispatch(unloadTable())}>
-          Unload
-        </Button>
-      </div>
-    </Card>
+    </div>
   );
 };
