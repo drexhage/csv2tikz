@@ -14,19 +14,22 @@ const initialState: TableState = {
 };
 
 export const tableSlice = createSlice({
-  name: 'table',
+  name: "table",
   initialState,
   reducers: {
-    loadTable: (state, action: PayloadAction<{ data: any[], headers: string[] }>) => {
+    loadTable: (
+      state,
+      action: PayloadAction<{ data: any[]; headers: string[] }>,
+    ) => {
       state.headers = action.payload.headers;
       state.data = action.payload.data;
       state.loaded = true;
     },
     unloadTable: (state) => {
-        state.headers = [];
-        state.data = [];
-        state.loaded = false;
-    }
+      state.headers = [];
+      state.data = [];
+      state.loaded = false;
+    },
   },
 });
 

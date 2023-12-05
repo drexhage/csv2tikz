@@ -10,7 +10,7 @@ function App() {
   if (table.loaded) {
     return <SplitView />;
   } else {
-    return <Dashboard />
+    return <Dashboard />;
   }
 }
 
