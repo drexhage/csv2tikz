@@ -1,13 +1,12 @@
 import { Button, Stack } from "@mui/material";
 import { useAppDispatch } from "../app/hooks";
 import { useRef } from "react";
-import { buildPyScript, testScript } from "../PyScriptUtils";
 import Papa from "papaparse";
 import { loadTable } from "../features/table/tableSlice";
+import GraphView from "./GraphView";
 
 export default () => {
   const inputFile = useRef<HTMLInputElement>(null);
-  const { execute, remove } = buildPyScript(testScript);
   let dispatch = useAppDispatch();
 
   let loadFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -37,16 +36,6 @@ export default () => {
           Import CSV
         </Button>
       </label>
-      <Button
-        variant="outlined"
-        style={{ cursor: "pointer" }}
-        onClick={execute}
-      >
-        Load script
-      </Button>
-      <Button variant="outlined" style={{ cursor: "pointer" }} onClick={remove}>
-        Remove script
-      </Button>
       <input
         type="file"
         id="file"
@@ -56,8 +45,7 @@ export default () => {
         style={{ display: "none" }}
         onChange={loadFile}
       />
-      <div id="matplotlib_image" />
-      <div id="tikz_output" />
+      <GraphView />
     </Stack>
   );
 };
