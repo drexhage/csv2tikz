@@ -2,6 +2,28 @@ import tikzplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 from pyscript import display
+import asyncio
+from pyodide.ffi import create_proxy
+from js import document, console
+import pandas as pd
+from io import BytesIO
+
+async def get_file(e):
+    files = e.target.files.to_py()
+    for file in files:
+        array_buf = await file.arrayBuffer() # Get arrayBuffer from file
+        file_bytes = array_buf.to_bytes() # convert to raw bytes array 
+        csv_file = BytesIO(file_bytes) # Wrap in Python BytesIO file-like object
+        # Read the CSV file into a Pandas DataFrame
+        console.log(csv_file)
+        df = pd.read_csv(csv_file, on_bad_lines='skip')
+        document.getElementById("outMsg").innerHTML = df.head(5)
+
+get_file_proxy = create_proxy(get_file)
+document.getElementById("file").addEventListener("change", get_file_proxy)
+document.getElementById("outMsg").innerHTML = "Ready"
+
+
 
 def display_graph(e):
     plt.style.use("ggplot")
