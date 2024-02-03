@@ -5,20 +5,49 @@ import Papa from "papaparse";
 import { loadTable } from "../features/table/tableSlice";
 import GraphView from "./GraphView";
 
+function readCsvTxt(txt: string, fileName: string, multiple: boolean): [string[], any[]] {
+  let lines = txt.split("\n");
+  let h = lines[0];
+  let headers: string[] = [];
+  for (let header of h.split(",")) {
+    let candidate = header;
+    while (headers.includes(candidate)) {
+      candidate = `${candidate} (duplicate)`;
+    }
+    headers.push(candidate);
+  }
+  let result = [];
+  for (let line of lines.slice(1)) {
+    let entries = line.split(",");
+    let entry: any = {};
+    for (let i = 0; i < h.length; i++) {
+      entry[headers[i]] = entries[i];
+    }
+    result.push(entry);
+  }
+  return [headers, result]
+}
+
 export default () => {
   const inputFile = useRef<HTMLInputElement>(null);
   let dispatch = useAppDispatch();
 
   let loadFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-      const text = e.target?.result?.toString()!;
-      let result = Papa.parse(text, { header: true });
-      dispatch(loadTable({ data: result.data, headers: result.meta.fields! }));
-    };
+    let multipleFiles = false;
     let files = e.target?.files!;
-    reader.readAsText(files[0]);
+    multipleFiles = files.length > 1;
+    for (let i = 0; i < files.length; i++) {
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        const text = e.target?.result?.toString()!;
+        //let result = Papa.parse(text, { header: true, delimiter: ",", newline: "\n" });
+        let fileName = files[i].name;
+        let [headers, result] = readCsvTxt(text, fileName, multipleFiles);
+        dispatch(loadTable({ data: result, headers, fileName }));
+      };
+      reader.readAsText(files[i]);
+    }
   };
   return (
     <Stack
@@ -41,6 +70,7 @@ export default () => {
         id="file"
         name="file"
         ref={inputFile}
+        multiple
         accept=".csv"
         style={{ display: "none" }}
         onChange={loadFile}

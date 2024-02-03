@@ -1,6 +1,4 @@
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
-import { useAppSelector } from "../app/hooks";
-import { selectTable } from "../features/table/tableSlice";
 
 interface ColumnSelectionProps {
   val: any;
@@ -8,6 +6,8 @@ interface ColumnSelectionProps {
   options: (string | undefined)[];
   fieldName: string;
 }
+
+export const EMPTY_VALUE = "EMPTY";
 
 export default ({
   options,
@@ -23,10 +23,13 @@ export default ({
         <Select
           labelId={`${fieldName}-field`}
           id={`${fieldName}-field`}
-          value={val}
+          value={val ? val : EMPTY_VALUE}
           label={fieldName.toUpperCase()}
           onChange={(g) => onChange(String(g.target.value))}
         >
+          <MenuItem key={-1} value={EMPTY_VALUE}>
+            undefined
+          </MenuItem>
           {options.map((x) => (
             <MenuItem key={i++} value={x}>
               {x}

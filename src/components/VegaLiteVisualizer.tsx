@@ -1,8 +1,8 @@
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { selectTable, unloadTable } from "../features/table/tableSlice";
 import { useEffect, useMemo, useState } from "react";
-import { Button, Card, Container, Divider, Grid, Toolbar } from "@mui/material";
-import ColumnSelection from "./ColumnSelection";
+import { Button, Divider, Grid, Toolbar } from "@mui/material";
+import ColumnSelection, { EMPTY_VALUE } from "./ColumnSelection";
 import { Aggregate } from "vega-lite/build/src/aggregate";
 import { VegaLite } from "react-vega";
 import { VisualizationSpec } from "vega-embed";
@@ -16,8 +16,8 @@ export default () => {
   let [xField, setXField] = useState(table.headers[0]);
   let [yField, setYField] = useState(table.headers[2]);
   let [colorField, setColorField] = useState(table.headers[1]);
-  let [yAggregate, setYAggregate] = useState<Aggregate | undefined>("sum");
-  let [xAggregate, setXAggregate] = useState<Aggregate | undefined>(undefined);
+  let [yAggregate, setYAggregate] = useState<Aggregate | null>("sum");
+  let [xAggregate, setXAggregate] = useState<Aggregate | null>(null);
 
   let config = useMemo<VisualizationSpec>(
     () => ({
@@ -29,11 +29,11 @@ export default () => {
       encoding: {
         x: {
           field: xField,
-          aggregate: xAggregate,
+          aggregate: xAggregate ? xAggregate : undefined,
         },
         y: {
           field: yField,
-          aggregate: yAggregate,
+          aggregate: yAggregate ? yAggregate : undefined,
         },
         color: {
           field: colorField,
@@ -58,8 +58,12 @@ export default () => {
 
   let setAggregate = (setterFunction: any) => {
     return (q: string) => {
-      let agg: Aggregate = q as Aggregate;
-      setterFunction(agg);
+      if (q === EMPTY_VALUE) {
+        setterFunction(null);
+      } else {
+        let agg: Aggregate = q as Aggregate;
+        setterFunction(agg);
+      }
     };
   };
 
@@ -88,19 +92,19 @@ export default () => {
           <ColumnSelection
             val={xField}
             options={table.headers}
-            onChange={setXField}
+            onChange={a => a && setXField(a)}
             fieldName={"X"}
           />
           <ColumnSelection
             val={yField}
             options={table.headers}
-            onChange={setYField}
+            onChange={x => x && setYField(x)}
             fieldName={"Y"}
           />
           <ColumnSelection
             val={colorField}
             options={table.headers}
-            onChange={setColorField}
+            onChange={x => x && setColorField(x)}
             fieldName={"color"}
           />
           <ColumnSelection
