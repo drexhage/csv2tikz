@@ -1,20 +1,36 @@
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, ThunkAction, createSlice } from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
 
 const FILE_NAME_COLUMN = "filename";
 
+enum DuplicateColumn {
+  takeFirst,
+  takeLast,
+  mark,
+}
+
 export interface TableState {
   headers: string[];
   data: any[];
-  fileNames: string[];
+  files: {fileName: string, txt: string}[];
   loaded: boolean;
+  transformation: {
+    delimiter: string;
+    duplicateColumn: DuplicateColumn;
+    normalize: boolean,
+  };
 }
 
 const initialState: TableState = {
   headers: [],
   data: [],
-  fileNames: [],
+  files: [],
   loaded: false,
+  transformation: {
+    normalize: false,
+    delimiter: ",",
+    duplicateColumn: DuplicateColumn.mark,
+  }
 };
 
 function headersAreTheSame(headers1: string[], headers2: string[]): boolean {
@@ -27,40 +43,25 @@ export const tableSlice = createSlice({
   reducers: {
     loadTable: (
       state,
-      action: PayloadAction<{ data: any[]; headers: string[]; fileName: string }>,
+      action: PayloadAction<{ txt: string; fileName: string }>,
     ) => {
-      if (!state.loaded) {
-        state.headers = action.payload.headers;
-        state.data = action.payload.data;
-        state.fileNames = [action.payload.fileName];
-        state.loaded = true;
-      } else {
-        // assert that headers are the same, add one header (excluding FILE_NAME_COLUMN) and append data
-        if (state.headers.includes(FILE_NAME_COLUMN)) {
-          // TODO
-        } else if (headersAreTheSame(state.headers, action.payload.headers)) {
-          state.headers.push(FILE_NAME_COLUMN);
-          let result = [];
-          // add existing entries
-          for (let i = 0; i < state.data.length; i++) {
-            let entry: any = JSON.parse(JSON.stringify(state)).data[i];
-            entry[FILE_NAME_COLUMN] = state.fileNames[0];
-            result.push(entry)
-          }
-          // add new entries
-          for (let i = 0; i < action.payload.data.length; i++) {
-            let entry: any = JSON.parse(JSON.stringify((action.payload))).data[i];
-            entry[FILE_NAME_COLUMN] = action.payload.fileName;
-            result.push(entry);
-          }
-          state.data = result;
-        }
-      }
+      state.files.push({ fileName: action.payload.fileName, txt: action.payload.txt})
+    },
+    setLoaded: (state, action: PayloadAction<boolean>) => {
+      state.loaded = action.payload;
+    },
+    setTable: (state, action: PayloadAction<{headers: string[], data: any[]}>) => {
+      state.data = action.payload.data;
+      state.headers = action.payload.headers;
+    },
+    setTransformationDelimiter: (state, action: PayloadAction<string>) => {
+      state.transformation.delimiter = action.payload;
     },
     unloadTable: (state) => {
       state.headers = [];
       state.data = [];
       state.loaded = false;
+      state.files = [];
     },
     updateCell: (
       state,
@@ -71,6 +72,81 @@ export const tableSlice = createSlice({
     },
   },
 });
+
+export const transformFiles = () => {
+  return (dispatch: any, getState: any) => {
+    let state = getState().table;
+    const { files, transformation } = state;
+    let result = [];
+    let resultHeaders: string[] = [];
+    for (let file of files) {
+      let [headers, data] = readCsvTxt(file.txt, transformation.delimiter, transformation.duplicateColumn);
+      resultHeaders = headers;
+      // TODO: assert same headers
+      // add new entries
+      if (transformation.normalize) {
+        [headers, data] = normalizeTable(headers, data);
+      }
+      for (let i = 0; i < data.length; i++) {
+        let entry: any = data[i];
+        entry[FILE_NAME_COLUMN] = file.fileName;
+        result.push(entry);
+      }
+    }
+    resultHeaders.push(FILE_NAME_COLUMN);
+    dispatch(setLoaded(true))
+    dispatch(setTable({headers: resultHeaders, data: result}));
+  };
+}
+
+function normalizeTable(headers: string[], data: any[]): [string[], any[]] {
+  let resultHeaders: string[] = [];
+  let resultData: any[] = [];
+  // TODO
+  return [resultHeaders, resultData];
+}
+
+function readCsvTxt(txt: string, delimiter: string, duplicateColumn: DuplicateColumn): [string[], any[]] {
+  let lines = txt.split("\n");
+  let h = lines[0];
+  let headers: string[] = [];
+  for (let header of h.split(delimiter)) {
+    let candidate = header;
+    //if (duplicateColumn === DuplicateColumn.mark) {
+      while (headers.includes(candidate)) {
+        candidate = `${candidate} (duplicate)`;
+      }
+    //}
+    headers.push(candidate);
+  }
+  let result = [];
+  for (let line of lines.slice(1)) {
+    let isInQuotes = false;
+    let j = 0;
+    let accumulated = "";
+    let entry: any = {};
+    for (let i = 0; i < line.length; i++) {
+      let char = line.charAt(i);
+      if (char === delimiter && !isInQuotes) {
+        entry[headers[j]] = accumulated;
+        j++;
+        accumulated = "";
+      } else if (char === '"' && isInQuotes) {
+        isInQuotes = false;
+      } else if (char === '"' && !isInQuotes) {
+        isInQuotes = true;
+      } else if (i == line.length - 1) {
+        entry[headers[j]] = accumulated;
+      } else {
+        accumulated = `${accumulated}${char}`;
+      }
+    }
+
+    result.push(entry);
+  }
+  return [headers, result]
+}
+
 
 /*
 function applySlicerColumns(slicerColumns: SlicerColumns, headers: string[], values: any[]): [string[], any[]] {
@@ -106,6 +182,6 @@ function applySlicerColumns(slicerColumns: SlicerColumns, headers: string[], val
 
 export const selectTable = (state: RootState) => state.table;
 
-export const { loadTable, unloadTable, updateCell } = tableSlice.actions;
+export const { setTable, setLoaded, loadTable, unloadTable, updateCell, setTransformationDelimiter } = tableSlice.actions;
 
 export default tableSlice.reducer;

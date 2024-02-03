@@ -1,9 +1,10 @@
 import { Box, Divider, Grid, Paper, Tab, Tabs } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import { selectTable, updateCell } from "../features/table/tableSlice";
+import { selectTable, setTransformationDelimiter, transformFiles, updateCell } from "../features/table/tableSlice";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import VegaLiteVisualizer from "./VegaLiteVisualizer";
 import { useState } from "react";
+import ColumnSelection from "./ColumnSelection";
 
 export default () => {
   let dispatch = useAppDispatch();
@@ -39,7 +40,17 @@ export default () => {
           </Tabs>
           <Divider />
           <>
-            {tab === 0 && <span>TODO</span>}
+            {
+              tab === 0 && 
+              <>
+                <ColumnSelection
+                  val={table.transformation.delimiter}
+                  options={[",", ";", "tab"]}
+                  onChange={(x: string) => x && dispatch(setTransformationDelimiter(x)) && dispatch(transformFiles())}
+                  fieldName={"Delimiter"}
+                />
+              </>
+            }
           </>
           <>
             {
