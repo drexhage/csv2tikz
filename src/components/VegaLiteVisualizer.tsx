@@ -7,17 +7,18 @@ import { Aggregate } from "vega-lite/build/src/aggregate";
 import { VegaLite } from "react-vega";
 import { VisualizationSpec } from "vega-embed";
 
-const AGGREGATE_FUNCTIONS = ["sum", "mean"];
+const AGGREGATE_FUNCTIONS = ["sum", "mean", "count"];
 
 export default () => {
   let dispatch = useAppDispatch();
   let table = useAppSelector(selectTable);
   const [data, setData] = useState<{ table: any[] }>({ table: [] });
   let [xField, setXField] = useState(table.headers[0]);
-  let [yField, setYField] = useState(table.headers[2]);
-  let [colorField, setColorField] = useState(table.headers[1]);
-  let [yAggregate, setYAggregate] = useState<Aggregate | null>("sum");
-  let [xAggregate, setXAggregate] = useState<Aggregate | null>(null);
+  let [yField, setYField] = useState(table.headers[18]);
+  let [colorField, setColorField] = useState(table.headers[0]);
+  let [yAggregate, setYAggregate] = useState<Aggregate | null>(null);
+  let [xAggregate, setXAggregate] = useState<Aggregate | null>("count");
+  let [xStack, setXStack] = useState<"normalize" | null>("normalize");
 
   let config = useMemo<VisualizationSpec>(
     () => ({
@@ -30,6 +31,7 @@ export default () => {
         x: {
           field: xField,
           aggregate: xAggregate ? xAggregate : undefined,
+          stack: xStack ? xStack : undefined,
         },
         y: {
           field: yField,
@@ -118,6 +120,12 @@ export default () => {
             options={AGGREGATE_FUNCTIONS}
             onChange={setAggregate(setXAggregate)}
             fieldName={"X-Aggregate"}
+          />
+          <ColumnSelection
+            val={xStack}
+            options={["normalize"]}
+            onChange={setAggregate(setXStack)}
+            fieldName={"X-Stack"}
           />
           <Button variant="contained" onClick={() => dispatch(unloadTable())}>
             Unload

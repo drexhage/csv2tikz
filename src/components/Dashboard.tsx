@@ -5,7 +5,7 @@ import Papa from "papaparse";
 import { loadTable } from "../features/table/tableSlice";
 import GraphView from "./GraphView";
 
-function readCsvTxt(txt: string, fileName: string, multiple: boolean): [string[], any[]] {
+function readCsvTxt(txt: string): [string[], any[]] {
   let lines = txt.split("\n");
   let h = lines[0];
   let headers: string[] = [];
@@ -18,11 +18,27 @@ function readCsvTxt(txt: string, fileName: string, multiple: boolean): [string[]
   }
   let result = [];
   for (let line of lines.slice(1)) {
-    let entries = line.split(",");
+    let isInQuotes = false;
+    let j = 0;
+    let accumulated = "";
     let entry: any = {};
-    for (let i = 0; i < h.length; i++) {
-      entry[headers[i]] = entries[i];
+    for (let i = 0; i < line.length; i++) {
+      let char = line.charAt(i);
+      if (char === ',' && !isInQuotes) {
+        entry[headers[j]] = accumulated;
+        j++;
+        accumulated = "";
+      } else if (char === '"' && isInQuotes) {
+        isInQuotes = false;
+      } else if (char === '"' && !isInQuotes) {
+        isInQuotes = true;
+      } else if (i == line.length - 1) {
+        entry[headers[j]] = accumulated;
+      } else {
+        accumulated = `${accumulated}${char}`;
+      }
     }
+
     result.push(entry);
   }
   return [headers, result]
@@ -43,7 +59,7 @@ export default () => {
         const text = e.target?.result?.toString()!;
         //let result = Papa.parse(text, { header: true, delimiter: ",", newline: "\n" });
         let fileName = files[i].name;
-        let [headers, result] = readCsvTxt(text, fileName, multipleFiles);
+        let [headers, result] = readCsvTxt(text);
         dispatch(loadTable({ data: result, headers, fileName }));
       };
       reader.readAsText(files[i]);
