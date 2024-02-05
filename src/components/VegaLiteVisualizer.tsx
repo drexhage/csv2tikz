@@ -13,9 +13,10 @@ export default () => {
   let dispatch = useAppDispatch();
   let table = useAppSelector(selectTable);
   const [data, setData] = useState<{ table: any[] }>({ table: [] });
-  let [xField, setXField] = useState(table.headers[0]);
-  let [yField, setYField] = useState(table.headers[18]);
-  let [colorField, setColorField] = useState(table.headers[0]);
+  let [yOffsetField, setYOffsetField] = useState<string | null>(table.headers[2]);
+  let [xField, setXField] = useState<string | null>(null);
+  let [yField, setYField] = useState<string | null>(table.headers[0]);
+  let [colorField, setColorField] = useState(table.headers[1]);
   let [yAggregate, setYAggregate] = useState<Aggregate | null>(null);
   let [xAggregate, setXAggregate] = useState<Aggregate | null>("count");
   let [xStack, setXStack] = useState<"normalize" | null>("normalize");
@@ -34,8 +35,11 @@ export default () => {
           stack: xStack ? xStack : undefined,
         },
         y: {
-          field: yField,
+          field: yField ? yField : undefined,
           aggregate: yAggregate ? yAggregate : undefined,
+        },
+        yOffset: {
+          field: yOffsetField ? yOffsetField : undefined,
         },
         color: {
           field: colorField,
@@ -91,6 +95,12 @@ export default () => {
       <div>
         <Divider />
         <Toolbar>
+          <ColumnSelection
+            val={yOffsetField}
+            options={table.headers}
+            onChange={a => a && setYOffsetField(a)}
+            fieldName={"X Offset"}
+          />
           <ColumnSelection
             val={xField}
             options={table.headers}

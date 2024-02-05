@@ -1,6 +1,6 @@
-import { Box, Divider, Grid, Paper, Tab, Tabs } from "@mui/material";
+import { Box, Divider, Grid, Paper, Switch, Tab, Tabs } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import { selectTable, setTransformationDelimiter, transformFiles, updateCell } from "../features/table/tableSlice";
+import { selectTable, setNormalize, setTransformationDelimiter, transformFiles, updateCell } from "../features/table/tableSlice";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import VegaLiteVisualizer from "./VegaLiteVisualizer";
 import { useState } from "react";
@@ -48,6 +48,11 @@ export default () => {
                   options={[",", ";", "tab"]}
                   onChange={(x: string) => x && dispatch(setTransformationDelimiter(x)) && dispatch(transformFiles())}
                   fieldName={"Delimiter"}
+                />
+                <Switch
+                  checked={table.transformation.normalize}
+                  onChange={_ => dispatch(setNormalize(!table.transformation.normalize)) && dispatch(transformFiles())}
+                  inputProps={{ 'aria-label': 'controlled' }}
                 />
               </>
             }

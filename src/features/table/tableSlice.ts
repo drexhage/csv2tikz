@@ -1,7 +1,7 @@
 import { PayloadAction, ThunkAction, createSlice } from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
 
-const FILE_NAME_COLUMN = "filename";
+const FILE_NAME_COLUMN = "Filename";
 
 enum DuplicateColumn {
   takeFirst,
@@ -27,7 +27,7 @@ const initialState: TableState = {
   files: [],
   loaded: false,
   transformation: {
-    normalize: false,
+    normalize: true,
     delimiter: ",",
     duplicateColumn: DuplicateColumn.mark,
   }
@@ -46,6 +46,9 @@ export const tableSlice = createSlice({
       action: PayloadAction<{ txt: string; fileName: string }>,
     ) => {
       state.files.push({ fileName: action.payload.fileName, txt: action.payload.txt})
+    },
+    setNormalize: (state, action: PayloadAction<boolean>) => {
+      state.transformation.normalize = action.payload;
     },
     setLoaded: (state, action: PayloadAction<boolean>) => {
       state.loaded = action.payload;
@@ -85,7 +88,7 @@ export const transformFiles = () => {
       // TODO: assert same headers
       // add new entries
       if (transformation.normalize) {
-        [headers, data] = normalizeTable(headers, data);
+        [resultHeaders, data] = normalizeTable(headers, data);
       }
       for (let i = 0; i < data.length; i++) {
         let entry: any = data[i];
@@ -100,9 +103,14 @@ export const transformFiles = () => {
 }
 
 function normalizeTable(headers: string[], data: any[]): [string[], any[]] {
-  let resultHeaders: string[] = [];
+  let resultHeaders: string[] = ["Column", "Data"];
   let resultData: any[] = [];
-  // TODO
+  for (let entry of data) {
+    for (let header of headers) {
+      let e = {Column: header, Data: entry[header]}
+      resultData.push(e);
+    }
+  }
   return [resultHeaders, resultData];
 }
 
@@ -182,6 +190,6 @@ function applySlicerColumns(slicerColumns: SlicerColumns, headers: string[], val
 
 export const selectTable = (state: RootState) => state.table;
 
-export const { setTable, setLoaded, loadTable, unloadTable, updateCell, setTransformationDelimiter } = tableSlice.actions;
+export const { setNormalize, setTable, setLoaded, loadTable, unloadTable, updateCell, setTransformationDelimiter } = tableSlice.actions;
 
 export default tableSlice.reducer;
