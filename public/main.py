@@ -16,7 +16,7 @@ async def get_file(e):
         csv_file = BytesIO(file_bytes) # Wrap in Python BytesIO file-like object
         # Read the CSV file into a Pandas DataFrame
         console.log(csv_file)
-        df = pd.read_csv(csv_file, on_bad_lines='skip')
+        df = pd.read_csv(csv_file, sep=";")
         document.getElementById("outMsg").innerHTML = df.head(5)
 
 get_file_proxy = create_proxy(get_file)

@@ -21,3 +21,14 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Jupyter
+/.virtual_documents
+/public/.ipynb_checkpoints
+/public/solo.csv
+/public/group.csv
+/public/Pro Teilnehmer-Tabelle 1.csv
+/public/Tabelle1-Tabelle 1.csv
+/public/HorizontalStackBarChart.ipynb
+/public/Untitled.ipynb
+/public/Untitled1.ipynb
