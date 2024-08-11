@@ -12,7 +12,7 @@ function GraphView() {
       <Button
         variant="outlined"
         style={{ cursor: "pointer" }}
-        py-click="display_graph"
+        //py-click="display_graph"
       >
         Load script
       </Button>

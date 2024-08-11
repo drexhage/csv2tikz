@@ -38,10 +38,15 @@
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <!--py-config src="./pyscript.json"></py-config-->
     <py-config>
-      packages = ["matplotlib", "numpy", "tikzplotlib", "asyncio", "pandas"]
+      packages = ["matplotlib", "numpy", "tikzplotlib", "asyncio", "pandas",
+      "webcolors==1.13"]
     </py-config>
-    <py-script src="./main.py"></py-script>
+    <py-script src="./graph.py"></py-script>
     <div id="outMsg"></div>
+    <div height="500px">
+      <div id="graph_display"></div>
+      <div id="tikz_code"></div>
+    </div>
     <div id="root"></div>
     <!--
       This HTML file is a template.

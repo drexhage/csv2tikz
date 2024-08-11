@@ -13,7 +13,9 @@ export default () => {
   let dispatch = useAppDispatch();
   let table = useAppSelector(selectTable);
   const [data, setData] = useState<{ table: any[] }>({ table: [] });
-  let [yOffsetField, setYOffsetField] = useState<string | null>(table.headers[2]);
+  let [yOffsetField, setYOffsetField] = useState<string | null>(
+    table.headers[2]
+  );
   let [xField, setXField] = useState<string | null>(null);
   let [yField, setYField] = useState<string | null>(table.headers[0]);
   let [colorField, setColorField] = useState(table.headers[1]);
@@ -46,7 +48,7 @@ export default () => {
         },
       },
     }),
-    [xField, xAggregate, yField, yAggregate, colorField],
+    [xField, xAggregate, yField, yAggregate, colorField]
   );
 
   useEffect(() => {
@@ -80,6 +82,7 @@ export default () => {
         height: "100%",
         flexDirection: "column",
         justifyContent: "space-between",
+        overflow: "auto",
       }}
     >
       <Grid
@@ -98,25 +101,25 @@ export default () => {
           <ColumnSelection
             val={yOffsetField}
             options={table.headers}
-            onChange={a => a && setYOffsetField(a)}
+            onChange={(a) => a && setYOffsetField(a)}
             fieldName={"X Offset"}
           />
           <ColumnSelection
             val={xField}
             options={table.headers}
-            onChange={a => a && setXField(a)}
+            onChange={(a) => a && setXField(a)}
             fieldName={"X"}
           />
           <ColumnSelection
             val={yField}
             options={table.headers}
-            onChange={x => x && setYField(x)}
+            onChange={(x) => x && setYField(x)}
             fieldName={"Y"}
           />
           <ColumnSelection
             val={colorField}
             options={table.headers}
-            onChange={x => x && setColorField(x)}
+            onChange={(x) => x && setColorField(x)}
             fieldName={"color"}
           />
           <ColumnSelection
