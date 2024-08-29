@@ -2,8 +2,9 @@ import tikzplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 from pyscript import display, window
+from js import document
 import pandas as pd
-from io import BytesIO, StringIO
+from io import StringIO
 import json
 
 ls = window.localStorage
@@ -14,20 +15,35 @@ def clean_df(df):
     df.rename(columns=remove_last_dot_number, inplace=True)
     return df
 
+def string_to_int(input):
+    if input:
+        return int(input)
+    return -1
+
 def load_files(e):
+    file_1 = string_to_int(document.getElementById("file_1_form_control").getElementsByTagName("input")[0].value)
+    file_2 = string_to_int(document.getElementById("file_2_form_control").getElementsByTagName("input")[0].value)
+
+    name_1 = document.getElementById("file_1_name").value
+    name_2 = document.getElementById("file_2_name").value
+
+    ignore_every_second_column = document.getElementById("ignore_every_second_column").checked
+
     storage = json.loads(ls.getItem("persist:root"))
-    csv_string = StringIO(json.loads(storage["files"])[0]["txt"])
-    csv_string_2 = StringIO(json.loads(storage["files"])[1]["txt"])
-    df_1 = pd.read_csv(csv_string, sep=",")
+    csv_string_1 = StringIO(json.loads(storage["files"])[file_1]["txt"])
+    csv_string_2 = StringIO(json.loads(storage["files"])[file_2]["txt"])
+    df_1 = pd.read_csv(csv_string_1, sep=",")
     df_2 = pd.read_csv(csv_string_2, sep=",")
-    df_1 = clean_df(df_1)
-    df_2 = clean_df(df_2)
+
+    if ignore_every_second_column:
+        df_1 = clean_df(df_1)
+        df_2 = clean_df(df_2)
 
     category_names = ["Never heard of it", "Not at all", "A little", "Some", "Much", "Very Much"]
     items = list(filter(lambda x: x in df_1.columns, df_2.columns))
     counted_1 = count_values_out_of_100(df_1, items)
     counted_2 = count_values_out_of_100(df_2, items)
-    survey(counted_1,counted_2, category_names, False)
+    survey(counted_1,counted_2, category_names, False, [name_1, name_2])
     # plt.show()
     display(plt, target="graph_output", append=False)
     display(tikzplotlib.get_tikz_code(), target="tikz_output", append=False)
@@ -69,7 +85,7 @@ def count_values_out_of_100(df, items):
         counted_values[item] = [x[1] for x in count]
     return counted_values
 
-def survey(results_solo, results_group, category_names, show_numbers):
+def survey(results_1, results_2, category_names, show_numbers, names):
     """
     Parameters
     ----------
@@ -81,13 +97,13 @@ def survey(results_solo, results_group, category_names, show_numbers):
         The category labels.
     """
     
-    labels = list(results_solo.keys())
+    labels = list(results_1.keys())
     x = np.arange(len(labels))
     
-    data = np.array(list(results_solo.values()))
+    data = np.array(list(results_1.values()))
     data_cum = data.cumsum(axis=1)
     
-    data_2 = np.array(list(results_group.values()))
+    data_2 = np.array(list(results_2.values()))
     data_cum_2 = data_2.cumsum(axis=1)
     
     category_colors = plt.colormaps['RdYlGn'](
@@ -140,7 +156,7 @@ def survey(results_solo, results_group, category_names, show_numbers):
     
     # Set ticks and labels for the right side
     ax2.set_yticks(x_duplicate)
-    ax2.set_yticklabels(["Solo", "Group"] * len(results_solo))
+    ax2.set_yticklabels(names * len(results_1))
     
     ax.legend(category_names, ncol=len(category_names), bbox_to_anchor=(0, 1),
               loc='lower left', fontsize='small')

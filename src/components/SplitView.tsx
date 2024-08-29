@@ -112,7 +112,7 @@ export default () => {
             <Settings />
           </Grid>
           <Grid item xs={8}>
-            <Box height={"105vh"} m={"1vh"}>
+            <Box height={"500px"} m={"1vh"}>
               <Paper
                 id="graph_output"
                 sx={{ height: "100%" }}
