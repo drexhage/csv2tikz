@@ -19,4 +19,8 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v1
 
-      - run: npm run deploy
+      - name: Install deps
+        run: npm install
+
+      - name: Deploy
+        run: npm run deploy
