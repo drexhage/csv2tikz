@@ -2,6 +2,7 @@
   "name": "csv2tikz",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://drexhage.github.io/csv2tikz",
   "dependencies": {
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.0",
