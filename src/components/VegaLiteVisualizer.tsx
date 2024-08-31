@@ -14,7 +14,7 @@ export default () => {
   let table = useAppSelector(selectTable);
   const [data, setData] = useState<{ table: any[] }>({ table: [] });
   let [yOffsetField, setYOffsetField] = useState<string | null>(
-    table.headers[2]
+    table.headers[2],
   );
   let [xField, setXField] = useState<string | null>(null);
   let [yField, setYField] = useState<string | null>(table.headers[0]);
@@ -48,7 +48,7 @@ export default () => {
         },
       },
     }),
-    [xField, xAggregate, yField, yAggregate, colorField]
+    [xField, xAggregate, yField, yAggregate, colorField],
   );
 
   useEffect(() => {

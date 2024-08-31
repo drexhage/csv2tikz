@@ -12,12 +12,12 @@ enum DuplicateColumn {
 export interface TableState {
   headers: string[];
   data: any[];
-  files: {fileName: string, txt: string}[];
+  files: { fileName: string; txt: string }[];
   loaded: boolean;
   transformation: {
     delimiter: string;
     duplicateColumn: DuplicateColumn;
-    normalize: boolean,
+    normalize: boolean;
   };
 }
 
@@ -30,11 +30,11 @@ const initialState: TableState = {
     normalize: true,
     delimiter: ",",
     duplicateColumn: DuplicateColumn.mark,
-  }
+  },
 };
 
 function headersAreTheSame(headers1: string[], headers2: string[]): boolean {
-  return JSON.stringify(headers1)==JSON.stringify(headers2);
+  return JSON.stringify(headers1) == JSON.stringify(headers2);
 }
 
 export const tableSlice = createSlice({
@@ -45,7 +45,10 @@ export const tableSlice = createSlice({
       state,
       action: PayloadAction<{ txt: string; fileName: string }>,
     ) => {
-      state.files.push({ fileName: action.payload.fileName, txt: action.payload.txt})
+      state.files.push({
+        fileName: action.payload.fileName,
+        txt: action.payload.txt,
+      });
     },
     setNormalize: (state, action: PayloadAction<boolean>) => {
       state.transformation.normalize = action.payload;
@@ -53,7 +56,10 @@ export const tableSlice = createSlice({
     setLoaded: (state, action: PayloadAction<boolean>) => {
       state.loaded = action.payload;
     },
-    setTable: (state, action: PayloadAction<{headers: string[], data: any[]}>) => {
+    setTable: (
+      state,
+      action: PayloadAction<{ headers: string[]; data: any[] }>,
+    ) => {
       state.data = action.payload.data;
       state.headers = action.payload.headers;
     },
@@ -83,7 +89,11 @@ export const transformFiles = () => {
     let result = [];
     let resultHeaders: string[] = [];
     for (let file of files) {
-      let [headers, data] = readCsvTxt(file.txt, transformation.delimiter, transformation.duplicateColumn);
+      let [headers, data] = readCsvTxt(
+        file.txt,
+        transformation.delimiter,
+        transformation.duplicateColumn,
+      );
       resultHeaders = headers;
       // TODO: assert same headers
       // add new entries
@@ -97,33 +107,37 @@ export const transformFiles = () => {
       }
     }
     resultHeaders.push(FILE_NAME_COLUMN);
-    dispatch(setLoaded(true))
-    dispatch(setTable({headers: resultHeaders, data: result}));
+    dispatch(setLoaded(true));
+    dispatch(setTable({ headers: resultHeaders, data: result }));
   };
-}
+};
 
 function normalizeTable(headers: string[], data: any[]): [string[], any[]] {
   let resultHeaders: string[] = ["Column", "Data"];
   let resultData: any[] = [];
   for (let entry of data) {
     for (let header of headers) {
-      let e = {Column: header, Data: entry[header]}
+      let e = { Column: header, Data: entry[header] };
       resultData.push(e);
     }
   }
   return [resultHeaders, resultData];
 }
 
-function readCsvTxt(txt: string, delimiter: string, duplicateColumn: DuplicateColumn): [string[], any[]] {
+function readCsvTxt(
+  txt: string,
+  delimiter: string,
+  duplicateColumn: DuplicateColumn,
+): [string[], any[]] {
   let lines = txt.split("\n");
   let h = lines[0];
   let headers: string[] = [];
   for (let header of h.split(delimiter)) {
     let candidate = header;
     //if (duplicateColumn === DuplicateColumn.mark) {
-      while (headers.includes(candidate)) {
-        candidate = `${candidate} (duplicate)`;
-      }
+    while (headers.includes(candidate)) {
+      candidate = `${candidate} (duplicate)`;
+    }
     //}
     headers.push(candidate);
   }
@@ -152,9 +166,8 @@ function readCsvTxt(txt: string, delimiter: string, duplicateColumn: DuplicateCo
 
     result.push(entry);
   }
-  return [headers, result]
+  return [headers, result];
 }
-
 
 /*
 function applySlicerColumns(slicerColumns: SlicerColumns, headers: string[], values: any[]): [string[], any[]] {
@@ -190,6 +203,14 @@ function applySlicerColumns(slicerColumns: SlicerColumns, headers: string[], val
 
 export const selectTable = (state: RootState) => state.table;
 
-export const { setNormalize, setTable, setLoaded, loadTable, unloadTable, updateCell, setTransformationDelimiter } = tableSlice.actions;
+export const {
+  setNormalize,
+  setTable,
+  setLoaded,
+  loadTable,
+  unloadTable,
+  updateCell,
+  setTransformationDelimiter,
+} = tableSlice.actions;
 
 export default tableSlice.reducer;
