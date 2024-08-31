@@ -1,4 +1,5 @@
 import tikzplotlib
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 from pyscript import display, window
@@ -20,7 +21,7 @@ def string_to_int(input):
         return int(input)
     return -1
 
-def load_files(e):
+def generate_graph_norm(e):
     file_1 = string_to_int(document.getElementById("file_1_form_control").getElementsByTagName("input")[0].value)
     file_2 = string_to_int(document.getElementById("file_2_form_control").getElementsByTagName("input")[0].value)
 
@@ -43,10 +44,30 @@ def load_files(e):
     items = list(filter(lambda x: x in df_1.columns, df_2.columns))
     counted_1 = count_values_out_of_100(df_1, items)
     counted_2 = count_values_out_of_100(df_2, items)
-    survey(counted_1,counted_2, category_names, False, [name_1, name_2])
+    norm_chart(counted_1,counted_2, category_names, False, [name_1, name_2])
     # plt.show()
     display(plt, target="graph_output", append=False)
     display(tikzplotlib.get_tikz_code(), target="tikz_output", append=False)
+
+def generate_graph_pie(e):
+    file = string_to_int(document.getElementById("file_1_form_control").getElementsByTagName("input")[0].value)
+    name = document.getElementById("file_1_name").value
+
+    ignore_every_second_column = document.getElementById("ignore_every_second_column").checked
+
+    storage = json.loads(ls.getItem("persist:root"))
+    csv_string = StringIO(json.loads(storage["files"])[file]["txt"])
+    df = pd.read_csv(csv_string, sep=",")
+
+    if ignore_every_second_column:
+        df = clean_df(df)
+
+    category_names = ["Never heard of it", "Not at all", "A little", "Some", "Much", "Very Much"]
+    counted = count_values_out_of_100(df, df.columns)
+    # plt.show()
+    display(plt, target="graph_output", append=False)
+    display(tikzplotlib.get_tikz_code(), target="tikz_output", append=False)
+    pie_chart(counted, category_names, False)
 
 def remove_last_dot_number(s):
     # Check if the last character is a digit or
@@ -85,7 +106,7 @@ def count_values_out_of_100(df, items):
         counted_values[item] = [x[1] for x in count]
     return counted_values
 
-def survey(results_1, results_2, category_names, show_numbers, names):
+def norm_chart(results_1, results_2, category_names, show_numbers, names):
     """
     Parameters
     ----------
@@ -163,3 +184,21 @@ def survey(results_1, results_2, category_names, show_numbers, names):
 
     return fig, ax
 
+def pie_chart(results, category_names, show_numbers):
+    labels = list(results.keys())
+    data = np.array(list(results.values()))
+    category_colors = plt.colormaps['RdYlGn'](
+        np.linspace(0.15, 0.85, data.shape[1]))
+    category_colors_hex = [mpl.colors.rgb2hex(x, keep_alpha=False) for x in category_colors]
+
+    fig, ax = plt.subplots(3, 3, subplot_kw={'aspect':'equal'})
+    y = np.array([35, 25, 25, 15])
+    print(labels)
+    for i in range(3):
+        for j in range(3):
+            idx = 3 * i + j
+            ax[i][j].set_title(labels[idx], fontsize='small')
+            ax[i][j].pie(data[idx], colors=category_colors_hex)
+
+    fig.legend(category_names, ncol=len(category_names),
+              loc='upper center', fontsize='small')
