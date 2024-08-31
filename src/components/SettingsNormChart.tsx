@@ -1,4 +1,4 @@
-import { Box, Paper, Button, Stack, Typography, Checkbox } from "@mui/material";
+import { Box, Button, Stack, Typography, Checkbox } from "@mui/material";
 import EqualizerIcon from "@mui/icons-material/Equalizer";
 import FileCard from "./FileCard";
 

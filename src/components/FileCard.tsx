@@ -14,14 +14,16 @@ import { store } from "../app/store";
 interface FileCardProps {
   nr: number;
   default: number;
+  ignoreNr?: boolean;
 }
 
 function FileCard(props: FileCardProps) {
   const files = store.getState().table.files;
+  const title = props.ignoreNr ? "File" : `File ${props.nr}`;
 
   return (
     <Card sx={{ minWidth: "35%" }} variant="outlined">
-      <CardHeader title={`File ${props.nr}`} />
+      <CardHeader title={title} />
       <CardContent>
         <Grid container spacing={2}>
           <Grid item xs={6}>

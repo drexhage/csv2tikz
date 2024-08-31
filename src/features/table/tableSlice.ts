@@ -1,4 +1,4 @@
-import { PayloadAction, ThunkAction, createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
 
 const FILE_NAME_COLUMN = "Filename";
@@ -33,17 +33,13 @@ const initialState: TableState = {
   },
 };
 
-function headersAreTheSame(headers1: string[], headers2: string[]): boolean {
-  return JSON.stringify(headers1) == JSON.stringify(headers2);
-}
-
 export const tableSlice = createSlice({
   name: "table",
   initialState,
   reducers: {
     loadTable: (
       state,
-      action: PayloadAction<{ txt: string; fileName: string }>,
+      action: PayloadAction<{ txt: string; fileName: string }>
     ) => {
       state.files.push({
         fileName: action.payload.fileName,
@@ -58,7 +54,7 @@ export const tableSlice = createSlice({
     },
     setTable: (
       state,
-      action: PayloadAction<{ headers: string[]; data: any[] }>,
+      action: PayloadAction<{ headers: string[]; data: any[] }>
     ) => {
       state.data = action.payload.data;
       state.headers = action.payload.headers;
@@ -74,7 +70,7 @@ export const tableSlice = createSlice({
     },
     updateCell: (
       state,
-      action: PayloadAction<{ idx: number; column: string; value: any }>,
+      action: PayloadAction<{ idx: number; column: string; value: any }>
     ) => {
       state.data[action.payload.idx][action.payload.column] =
         action.payload.value;
@@ -92,7 +88,7 @@ export const transformFiles = () => {
       let [headers, data] = readCsvTxt(
         file.txt,
         transformation.delimiter,
-        transformation.duplicateColumn,
+        transformation.duplicateColumn
       );
       resultHeaders = headers;
       // TODO: assert same headers
@@ -127,7 +123,7 @@ function normalizeTable(headers: string[], data: any[]): [string[], any[]] {
 function readCsvTxt(
   txt: string,
   delimiter: string,
-  duplicateColumn: DuplicateColumn,
+  duplicateColumn: DuplicateColumn
 ): [string[], any[]] {
   let lines = txt.split("\n");
   let h = lines[0];
@@ -157,7 +153,7 @@ function readCsvTxt(
         isInQuotes = false;
       } else if (char === '"' && !isInQuotes) {
         isInQuotes = true;
-      } else if (i == line.length - 1) {
+      } else if (i === line.length - 1) {
         entry[headers[j]] = accumulated;
       } else {
         accumulated = `${accumulated}${char}`;

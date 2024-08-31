@@ -22,16 +22,11 @@ import {
 import { useState } from "react";
 import SettingsNormChart from "./SettingsNormChart";
 import DownloadIcon from "@mui/icons-material/Download";
-import {
-  BarChart,
-  CopyAll,
-  PieChart,
-  StackedBarChart,
-  ClearAll,
-} from "@mui/icons-material";
+import { Analytics, CopyAll, ClearAll } from "@mui/icons-material";
 import SettingsPie from "./SettingsPie";
 import { useAppDispatch } from "../app/hooks";
 import { unloadTable } from "../features/table/tableSlice";
+import UploadButton from "./UploadButton";
 
 function SplitView() {
   const [open, setOpen] = useState(false);
@@ -44,13 +39,13 @@ function SplitView() {
       var img = document.images[0];
       var url = img.src.replace(
         /^data:image\/[^;]+/,
-        "data:application/octet-stream",
+        "data:application/octet-stream"
       );
 
       var downloadLink = document.createElement("a");
       downloadLink.href = url;
       var filename_input = document.getElementById(
-        "image_file_name",
+        "image_file_name"
       ) as HTMLInputElement;
       downloadLink.download = filename_input.value ?? "graph.png";
 
@@ -79,7 +74,7 @@ function SplitView() {
 
   const handleClose = (
     event: React.SyntheticEvent | Event,
-    reason?: SnackbarCloseReason,
+    reason?: SnackbarCloseReason
   ) => {
     if (reason === "clickaway") {
       return;
@@ -118,6 +113,7 @@ function SplitView() {
       <AppBar>
         <Container maxWidth="xl">
           <Toolbar disableGutters variant={"dense"}>
+            <Analytics sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} />
             <Typography
               variant="h6"
               component="div"
@@ -125,31 +121,7 @@ function SplitView() {
             >
               CSV2TikZ
             </Typography>
-            <Button
-              onClick={() => setActiveTab(ChartType.normStacked)}
-              startIcon={
-                <StackedBarChart style={{ transform: "rotate(90deg)" }} />
-              }
-              color="inherit"
-            >
-              Horizontal Stacked Bar chart
-            </Button>
-            <Button
-              onClick={() => setActiveTab(ChartType.pie)}
-              startIcon={<PieChart />}
-              sx={{ ml: 2 }}
-              color="inherit"
-            >
-              Pie chart
-            </Button>
-            <Button
-              onClick={() => setActiveTab(ChartType.bar)}
-              startIcon={<BarChart />}
-              sx={{ ml: 2 }}
-              color="inherit"
-            >
-              Bar chart
-            </Button>
+            <UploadButton />
             <Button
               onClick={() => dispatch(unloadTable())}
               startIcon={<ClearAll />}
@@ -172,9 +144,9 @@ function SplitView() {
               </Tabs>
               <Divider />
               <Box sx={{ padding: "16px" }}>
-                {activeTab == ChartType.pie && <SettingsPie />}
-                {activeTab == ChartType.normStacked && <SettingsNormChart />}
-                {activeTab == ChartType.bar && <span>todo</span>}
+                {activeTab === ChartType.pie && <SettingsPie />}
+                {activeTab === ChartType.normStacked && <SettingsNormChart />}
+                {activeTab === ChartType.bar && <span>todo</span>}
               </Box>
             </Paper>
           </Box>
@@ -192,7 +164,7 @@ function SplitView() {
               <Divider />
               <Box
                 sx={{
-                  display: activeOuptut == OutputType.image ? "flex" : "none",
+                  display: activeOuptut === OutputType.image ? "flex" : "none",
                   justifyContent: "center",
                   alignItems: "center",
                 }}
@@ -227,7 +199,7 @@ function SplitView() {
               </Box>
               <Box
                 sx={{
-                  display: activeOuptut == OutputType.tikz ? "flex" : "none",
+                  display: activeOuptut === OutputType.tikz ? "flex" : "none",
                   justifyContent: "center",
                   alignItems: "center",
                 }}

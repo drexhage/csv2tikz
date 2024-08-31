@@ -65,9 +65,9 @@ def generate_graph_pie(e):
     category_names = ["Never heard of it", "Not at all", "A little", "Some", "Much", "Very Much"]
     counted = count_values_out_of_100(df, df.columns)
     # plt.show()
+    pie_chart(counted, category_names, False)
     display(plt, target="graph_output", append=False)
     display(tikzplotlib.get_tikz_code(), target="tikz_output", append=False)
-    pie_chart(counted, category_names, False)
 
 def remove_last_dot_number(s):
     # Check if the last character is a digit or

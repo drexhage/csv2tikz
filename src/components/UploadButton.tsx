@@ -1,10 +1,23 @@
-import { Button, Stack } from "@mui/material";
+import { styled } from "@mui/material/styles";
+import { Button } from "@mui/material";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { useAppDispatch } from "../app/hooks";
 import { useRef } from "react";
 import { loadTable, transformFiles } from "../features/table/tableSlice";
-import GraphView from "./GraphView";
 
-const Dashboard = () => {
+const VisuallyHiddenInput = styled("input")({
+  clip: "rect(0 0 0 0)",
+  clipPath: "inset(50%)",
+  height: 1,
+  overflow: "hidden",
+  position: "absolute",
+  bottom: 0,
+  left: 0,
+  whiteSpace: "nowrap",
+  width: 1,
+});
+
+export default function UploadButton() {
   const inputFile = useRef<HTMLInputElement>(null);
   let dispatch = useAppDispatch();
 
@@ -23,22 +36,15 @@ const Dashboard = () => {
     }
   };
   return (
-    <Stack
-      direction="row"
-      justifyContent="center"
-      alignItems="center"
-      sx={{ width: 1, height: "100vh" }}
+    <Button
+      color="inherit"
+      component="label"
+      role={undefined}
+      tabIndex={-1}
+      startIcon={<CloudUploadIcon />}
     >
-      <label htmlFor="file">
-        <Button
-          variant="contained"
-          style={{ cursor: "pointer" }}
-          onClick={() => inputFile.current?.click()}
-        >
-          Import CSV
-        </Button>
-      </label>
-      <input
+      Upload files
+      <VisuallyHiddenInput
         type="file"
         id="file"
         name="file"
@@ -48,9 +54,6 @@ const Dashboard = () => {
         style={{ display: "none" }}
         onChange={loadFile}
       />
-      <GraphView />
-    </Stack>
+    </Button>
   );
-};
-
-export default Dashboard;
+}
