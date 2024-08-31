@@ -17,7 +17,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useState } from "react";
-import Settings from "./Settings";
+import SettingsNormChart from "./SettingsNormChart";
 import DownloadIcon from "@mui/icons-material/Download";
 import {
   BarChart,
@@ -25,6 +25,7 @@ import {
   PieChart,
   StackedBarChart,
 } from "@mui/icons-material";
+import SettingsPie from "./SettingsPie";
 
 function SplitView() {
   const [open, setOpen] = useState(false);
@@ -91,6 +92,9 @@ function SplitView() {
     </IconButton>
   );
 
+  // define different graph tabs
+  let [activeTab, setActiveTab] = useState("pie")
+
   // TODO: relies on 'vh' which will not work well when adding a header
   return (
     <Box>
@@ -98,6 +102,7 @@ function SplitView() {
         <Container maxWidth="xl">
           <Toolbar disableGutters>
             <Button
+              onClick={() => setActiveTab("norm")}
               startIcon={
                 <StackedBarChart style={{ transform: "rotate(90deg)" }} />
               }
@@ -105,10 +110,10 @@ function SplitView() {
             >
               Horizontal Stacked Bar chart
             </Button>
-            <Button startIcon={<PieChart />} sx={{ ml: 2 }} color="inherit">
+            <Button onClick={() => setActiveTab("pie")} startIcon={<PieChart />} sx={{ ml: 2 }} color="inherit">
               Pie chart
             </Button>
-            <Button startIcon={<BarChart />} sx={{ ml: 2 }} color="inherit">
+            <Button onClick={() => setActiveTab("bar")} startIcon={<BarChart />} sx={{ ml: 2 }} color="inherit">
               Bar chart
             </Button>
           </Toolbar>
@@ -116,7 +121,9 @@ function SplitView() {
       </AppBar>
       <Grid container mt={8}>
         <Grid item xs={4}>
-          <Settings />
+          {(activeTab == "pie") && <SettingsPie />}
+          {(activeTab == "norm") && <SettingsNormChart />}
+          {(activeTab == "bar") && <span>todo</span>}
         </Grid>
         <Grid item xs={8}>
           <Box height={"560px"} m={"1vh"}>

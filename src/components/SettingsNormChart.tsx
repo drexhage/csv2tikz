@@ -2,7 +2,7 @@ import { Box, Paper, Button, Stack, Typography, Checkbox } from "@mui/material";
 import EqualizerIcon from "@mui/icons-material/Equalizer";
 import FileCard from "./FileCard";
 
-function Settings() {
+function SettingsNormChart() {
   return (
     <Box m={"1vh"} height={"528px"}>
       <Paper sx={{ height: "100%", padding: "16px" }} variant="outlined">
@@ -20,7 +20,7 @@ function Settings() {
           <Box sx={{ m: 2, alignSelf: "center" }}>
             <Button
               variant="outlined"
-              py-click="load_files"
+              py-click="generate_graph_norm"
               startIcon={<EqualizerIcon />}
             >
               GENERATE
@@ -32,4 +32,4 @@ function Settings() {
   );
 }
 
-export default Settings;
+export default SettingsNormChart;
