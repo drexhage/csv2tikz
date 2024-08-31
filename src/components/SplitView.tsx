@@ -27,6 +27,7 @@ import {
   CopyAll,
   PieChart,
   StackedBarChart,
+  ClearAll,
 } from "@mui/icons-material";
 import SettingsPie from "./SettingsPie";
 import { useAppDispatch } from "../app/hooks";
@@ -116,7 +117,14 @@ function SplitView() {
     <Box>
       <AppBar>
         <Container maxWidth="xl">
-          <Toolbar disableGutters>
+          <Toolbar disableGutters variant={"dense"}>
+            <Typography
+              variant="h6"
+              component="div"
+              sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
+            >
+              CSV2TikZ
+            </Typography>
             <Button
               onClick={() => setActiveTab(ChartType.normStacked)}
               startIcon={
@@ -144,6 +152,7 @@ function SplitView() {
             </Button>
             <Button
               onClick={() => dispatch(unloadTable())}
+              startIcon={<ClearAll />}
               sx={{ ml: 2 }}
               color="inherit"
             >
@@ -152,9 +161,9 @@ function SplitView() {
           </Toolbar>
         </Container>
       </AppBar>
-      <Grid container mt={8}>
+      <Grid container mt={7}>
         <Grid item xs={4}>
-          <Box m={"1vh"} height={"528px"}>
+          <Box m={"1vh"} height={"100%"}>
             <Paper sx={{ height: "100%" }} variant="outlined">
               <Tabs value={activeTab} onChange={(_, x) => setActiveTab(x)}>
                 <Tab label="Horizontal Stacked Bar Chart" />
@@ -171,7 +180,7 @@ function SplitView() {
           </Box>
         </Grid>
         <Grid item xs={8}>
-          <Box height={"560px"} m={"1vh"}>
+          <Box height={"100%"} m={"1vh"}>
             <Paper sx={{ height: "100%" }} variant="outlined">
               <Tabs
                 value={activeOuptut}
@@ -181,85 +190,92 @@ function SplitView() {
                 <Tab label="Tikz Code" />
               </Tabs>
               <Divider />
-              {activeOuptut == OutputType.image && (
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <Stack spacing={2}>
-                    <Box id="graph_output">
-                      <Skeleton variant="rounded" width={900} height={480} />
-                    </Box>
-                    <Stack
-                      spacing={2}
-                      direction={"row"}
-                      sx={{ alignSelf: "center" }}
-                    >
-                      <TextField
-                        id={"image_file_name"}
-                        label="Image file name"
+              <Box
+                sx={{
+                  display: activeOuptut == OutputType.image ? "flex" : "none",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Stack spacing={2}>
+                  <Box id="graph_output">
+                    <Skeleton variant="rounded" width={900} height={480} />
+                  </Box>
+                  <Stack
+                    spacing={2}
+                    direction={"row"}
+                    sx={{ alignSelf: "center" }}
+                  >
+                    <TextField
+                      id={"image_file_name"}
+                      label="Image file name"
+                      variant="outlined"
+                      size="small"
+                      defaultValue={"graph.png"}
+                    />
+                    <Box sx={{ alignSelf: "center" }}>
+                      <Button
+                        onClick={downloadImage}
                         variant="outlined"
-                        size="small"
-                        defaultValue={"graph.png"}
-                      />
-                      <Box sx={{ alignSelf: "center" }}>
-                        <Button
-                          onClick={downloadImage}
-                          variant="outlined"
-                          startIcon={<DownloadIcon />}
-                        >
-                          Download image
-                        </Button>
-                      </Box>
-                    </Stack>
+                        startIcon={<DownloadIcon />}
+                      >
+                        Download image
+                      </Button>
+                    </Box>
                   </Stack>
-                </Box>
-              )}
-              {activeOuptut == OutputType.tikz && (
-                <span>
-                  todo (generation fails due to missing image id in tikz code)
-                </span>
-              )}
+                </Stack>
+              </Box>
+              <Box
+                sx={{
+                  display: activeOuptut == OutputType.tikz ? "flex" : "none",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Grid item xs={12}>
+                  <Paper sx={{ m: "1vh" }} variant="outlined">
+                    <Typography sx={{ m: 1 }}>Output:</Typography>
+                    <Grid container>
+                      <Grid item xs={10}>
+                        <Paper
+                          id="tikz_output"
+                          variant="outlined"
+                          sx={{
+                            p: 1,
+                            height: "100px",
+                            overflow: "auto",
+                            ml: 1,
+                            mb: 1,
+                          }}
+                        >
+                          <Skeleton variant="rounded" height={"100%"} />
+                        </Paper>
+                      </Grid>
+                      <Grid item xs={2}>
+                        <Stack sx={{ height: "100%" }}>
+                          <Button
+                            variant="outlined"
+                            sx={{ m: "auto" }}
+                            onClick={downloadText}
+                            startIcon={<DownloadIcon />}
+                          >
+                            Download
+                          </Button>
+                          <Button
+                            variant="outlined"
+                            sx={{ m: "auto" }}
+                            startIcon={<CopyAll />}
+                          >
+                            Copy
+                          </Button>
+                        </Stack>
+                      </Grid>
+                    </Grid>
+                  </Paper>
+                </Grid>
+              </Box>
             </Paper>
           </Box>
-        </Grid>
-        <Grid item xs={12}>
-          <Paper sx={{ m: "1vh" }} variant="outlined">
-            <Typography sx={{ m: 1 }}>Output:</Typography>
-            <Grid container>
-              <Grid item xs={10}>
-                <Paper
-                  id="tikz_output"
-                  variant="outlined"
-                  sx={{ p: 1, height: "100px", overflow: "auto", ml: 1, mb: 1 }}
-                >
-                  <Skeleton variant="rounded" height={"100%"} />
-                </Paper>
-              </Grid>
-              <Grid item xs={2}>
-                <Stack sx={{ height: "100%" }}>
-                  <Button
-                    variant="outlined"
-                    sx={{ m: "auto" }}
-                    onClick={downloadText}
-                    startIcon={<DownloadIcon />}
-                  >
-                    Download
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    sx={{ m: "auto" }}
-                    startIcon={<CopyAll />}
-                  >
-                    Copy
-                  </Button>
-                </Stack>
-              </Grid>
-            </Grid>
-          </Paper>
         </Grid>
       </Grid>
       <Snackbar
