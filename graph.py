@@ -256,3 +256,6 @@ def bar_chart(results, show_numbers):
 
     fig.legend(category_names, ncol=len(category_names),
               loc='upper center', fontsize='small')
+
+# when file is done loading, make sure to let the application know through this hint
+display("true", target="pyscript_loaded", append=False)
