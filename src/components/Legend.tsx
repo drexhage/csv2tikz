@@ -91,7 +91,7 @@ function Legend() {
       <DragDropContext onDragEnd={handleOnDragEnd}>
         <Droppable droppableId="droppable">
           {(provided, snapshot) => (
-            <List ref={provided.innerRef}>
+            <List id="legend_list" ref={provided.innerRef}>
               {data.map((item, index) => (
                 <Draggable key={item[0]} draggableId={item[0]} index={index}>
                   {(provided, snapshot) => (
