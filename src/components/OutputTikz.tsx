@@ -1,10 +1,4 @@
-import {
-  Button,
-  Grid,
-  Paper,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Button, Grid, Paper, Stack, Typography } from "@mui/material";
 import { CopyAll } from "@mui/icons-material";
 import DownloadIcon from "@mui/icons-material/Download";
 import SyntaxHighlighter from "react-syntax-highlighter";
@@ -38,16 +32,15 @@ function OutputTikz() {
       <Paper sx={{ m: "1vh" }} variant="outlined">
         <Typography sx={{ m: 1 }}>Output:</Typography>
         <Grid container>
-          <Grid item xs={10}>
+          <Grid item xs={12}>
             <Paper
               // id="tikz_output"
               variant="outlined"
               sx={{
                 p: 1,
-                height: "100px",
+                height: "400px",
                 overflow: "auto",
-                ml: 1,
-                mb: 1,
+                m: 1,
               }}
             >
               <SyntaxHighlighter language="latex" style={arduinoLight}>
@@ -55,24 +48,24 @@ function OutputTikz() {
               </SyntaxHighlighter>
             </Paper>
           </Grid>
-          <Grid item xs={2}>
-            <Stack sx={{ height: "100%" }}>
-              <Button
-                variant="outlined"
-                sx={{ m: "auto" }}
-                onClick={downloadText}
-                startIcon={<DownloadIcon />}
-              >
-                Download
-              </Button>
-              <Button
-                variant="outlined"
-                sx={{ m: "auto" }}
-                startIcon={<CopyAll />}
-              >
-                Copy
-              </Button>
-            </Stack>
+          <Grid item xs={6} sx={{ textAlign: "right", mb: 1, pr: 1 }}>
+            <Button
+              variant="outlined"
+              sx={{ m: "auto" }}
+              onClick={downloadText}
+              startIcon={<DownloadIcon />}
+            >
+              Download
+            </Button>
+          </Grid>
+          <Grid item xs={6} sx={{ textAlign: "left", mb: 1, pl: 1 }}>
+            <Button
+              variant="outlined"
+              sx={{ m: "auto" }}
+              startIcon={<CopyAll />}
+            >
+              Copy
+            </Button>
           </Grid>
         </Grid>
       </Paper>

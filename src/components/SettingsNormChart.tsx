@@ -16,7 +16,7 @@ function SettingsNormChart() {
         />
         <Typography>Ignore every second column</Typography>
       </Stack>
-      <Legend indices={[0, 1]} />
+      <Legend />
       <Box sx={{ m: 2, alignSelf: "center" }}>
         <Button
           variant="outlined"

@@ -18,15 +18,29 @@ import {
 } from "react-beautiful-dnd";
 import { DragHandle } from "@mui/icons-material";
 
-interface LegendProps {
-  indices: number[];
-}
-
-function Legend(props: LegendProps) {
+function Legend() {
   let files = useAppSelector(selectFiles);
   const valueLabelMap = new Map();
 
-  for (let i in props.indices) {
+  let indices = [];
+  if (!!document.getElementById("file_1_form_control")) {
+    let index = document
+      ?.getElementById("file_1_form_control")
+      ?.getElementsByTagName("input")[0].value;
+    if (!!index && +index >= 0) {
+      indices.push(+index);
+    }
+  }
+  if (!!document.getElementById("file_2_form_control")) {
+    let index = document
+      ?.getElementById("file_2_form_control")
+      ?.getElementsByTagName("input")[0].value;
+    if (!!index && +index >= 0) {
+      indices.push(+index);
+    }
+  }
+
+  for (let i in indices) {
     let rows = files[i].txt.trim().split("\n");
     rows.splice(0, 1);
 
@@ -72,7 +86,7 @@ function Legend(props: LegendProps) {
 
   return (
     <Stack>
-      <Typography>Legend</Typography>
+      <Typography variant="h5">Legend</Typography>
 
       <DragDropContext onDragEnd={handleOnDragEnd}>
         <Droppable droppableId="droppable">

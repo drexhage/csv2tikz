@@ -9,13 +9,13 @@ function OutputImage(props: { onDownloadError: () => void }) {
       var img = document.images[0];
       var url = img.src.replace(
         /^data:image\/[^;]+/,
-        "data:application/octet-stream",
+        "data:application/octet-stream"
       );
 
       var downloadLink = document.createElement("a");
       downloadLink.href = url;
       var filename_input = document.getElementById(
-        "image_file_name",
+        "image_file_name"
       ) as HTMLInputElement;
       downloadLink.download = filename_input.value ?? "graph.png";
 
@@ -26,9 +26,14 @@ function OutputImage(props: { onDownloadError: () => void }) {
   };
 
   return (
-    <Stack spacing={2}>
-      <Box id="graph_output">
-        <Skeleton variant="rounded" width={900} height={480} />
+    <Stack spacing={2} sx={{ width: "100%" }}>
+      <Box id="graph_output" sx={{ width: "100%" }}>
+        <Skeleton
+          variant="rounded"
+          width={900}
+          height={480}
+          sx={{ mt: 1, maxWidth: "100%", marginX: "auto" }}
+        />
       </Box>
       <Stack spacing={2} direction={"row"} sx={{ alignSelf: "center" }}>
         <TextField
