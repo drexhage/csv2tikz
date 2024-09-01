@@ -9,13 +9,13 @@ function OutputImage(props: { onDownloadError: () => void }) {
       var img = document.images[0];
       var url = img.src.replace(
         /^data:image\/[^;]+/,
-        "data:application/octet-stream"
+        "data:application/octet-stream",
       );
 
       var downloadLink = document.createElement("a");
       downloadLink.href = url;
       var filename_input = document.getElementById(
-        "image_file_name"
+        "image_file_name",
       ) as HTMLInputElement;
       downloadLink.download = filename_input.value ?? "graph.png";
 

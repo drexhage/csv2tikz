@@ -4,6 +4,7 @@ import DownloadIcon from "@mui/icons-material/Download";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { arduinoLight } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import { useState } from "react";
+import { observeNode } from "../app/observe";
 
 function OutputTikz() {
   const downloadText = () => {
@@ -20,12 +21,7 @@ function OutputTikz() {
   };
 
   const [text, setText] = useState("");
-  const targetNode = document.getElementById("tikz_output")!;
-  const config = { attributes: true, childList: true, subtree: true };
-  const observer = new MutationObserver((target) => {
-    setText(target[0].target.textContent!);
-  });
-  observer.observe(targetNode, config);
+  observeNode("tikz_output", (x) => setText(x.target.textContent!));
 
   return (
     <Grid item xs={12}>
