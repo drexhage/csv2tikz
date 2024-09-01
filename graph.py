@@ -40,12 +40,11 @@ def generate_graph_norm(e):
         df_1 = clean_df(df_1)
         df_2 = clean_df(df_2)
 
-    category_names = ["Never heard of it", "Not at all", "A little", "Some", "Much", "Very Much"]
     items = list(filter(lambda x: x in df_1.columns, df_2.columns))
     counted_1 = count_values_out_of_100(df_1, items)
     counted_2 = count_values_out_of_100(df_2, items)
-    norm_chart(counted_1,counted_2, category_names, False, [name_1, name_2])
-    # plt.show()
+    norm_chart(counted_1,counted_2, False, [name_1, name_2])
+
     display(plt, target="graph_output", append=False)
     display(tikzplotlib.get_tikz_code(), target="tikz_output", append=False)
 
@@ -62,10 +61,9 @@ def generate_graph_pie(e):
     if ignore_every_second_column:
         df = clean_df(df)
 
-    category_names = ["Never heard of it", "Not at all", "A little", "Some", "Much", "Very Much"]
     counted = count_values_out_of_100(df, df.columns)
     # plt.show()
-    pie_chart(counted, category_names, False)
+    pie_chart(counted, False)
     display(plt, target="graph_output", append=False)
     display(tikzplotlib.get_tikz_code(), target="tikz_output", append=False)
 
@@ -82,10 +80,9 @@ def generate_graph_bar(e):
     if ignore_every_second_column:
         df = clean_df(df)
 
-    category_names = ["Never heard of it", "Not at all", "A little", "Some", "Much", "Very Much"]
     counted = count_values_out_of_100(df, df.columns)
     # plt.show()
-    bar_chart(counted, category_names, False)
+    bar_chart(counted, False)
     display(plt, target="graph_output", append=False)
     display(tikzplotlib.get_tikz_code(), target="tikz_output", append=False)
 
@@ -108,9 +105,24 @@ def remove_last_dot_number(s):
             return s
     return s
 
+def get_ordering_list():
+    ordering_list = []
+    list = document.getElementById("legend_list")
+    for child in list.children:
+        ordering_list.append(int(child.getAttribute('data-rbd-drag-handle-draggable-id')))
+    return ordering_list
+
+def get_category_names():
+    category_names = []
+    list = document.getElementById("legend_list")
+    for child in list.children:
+        category_names.append(child.getElementsByTagName("input")[0].value)
+    return category_names
+
 # for every column we need to count all values and determine how many out of 100 are
 def count_values_out_of_100(df, items):
     counted_values = {}
+    ordering_list = get_ordering_list()
     for item in items:
         values, counts = np.unique(df[item].tolist(), return_counts=True)
         counts = (counts / sum(counts)) * 100
@@ -120,23 +132,16 @@ def count_values_out_of_100(df, items):
                 values = np.append(values, x)
                 counts = np.append(counts, 0)
     
-        count = sorted(zip(values, counts))
+        # count = sorted(zip(values, counts))
+        count = [x for _, x in sorted(zip(ordering_list, zip(values, counts)))]
+
         count = count[-1:] + count[:-1]
         
         counted_values[item] = [x[1] for x in count]
     return counted_values
 
-def norm_chart(results_1, results_2, category_names, show_numbers, names):
-    """
-    Parameters
-    ----------
-    results : dict
-        A mapping from question labels to a list of answers per category.
-        It is assumed all lists contain the same number of entries and that
-        it matches the length of *category_names*.
-    category_names : list of str
-        The category labels.
-    """
+def norm_chart(results_1, results_2, show_numbers, names):
+    category_names = get_category_names()
     
     labels = list(results_1.keys())
     x = np.arange(len(labels))
@@ -204,7 +209,8 @@ def norm_chart(results_1, results_2, category_names, show_numbers, names):
 
     return fig, ax
 
-def pie_chart(results, category_names, show_numbers):
+def pie_chart(results, show_numbers):
+    category_names = get_category_names()
     labels = list(results.keys())
     data = np.array(list(results.values()))
     category_colors = plt.colormaps['RdYlGn'](
@@ -223,7 +229,8 @@ def pie_chart(results, category_names, show_numbers):
     fig.legend(category_names, ncol=len(category_names),
               loc='upper center', fontsize='small')
 
-def bar_chart(results, category_names, show_numbers):
+def bar_chart(results, show_numbers):
+    category_names = get_category_names()
     labels = list(results.keys()) # logical lines etc
     data = np.array(list(results.values()))
     category_colors = plt.colormaps['RdYlGn'](
