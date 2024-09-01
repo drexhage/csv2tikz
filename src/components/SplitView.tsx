@@ -27,6 +27,7 @@ import SettingsPie from "./SettingsPie";
 import { useAppDispatch } from "../app/hooks";
 import { unloadTable } from "../features/table/tableSlice";
 import UploadButton from "./UploadButton";
+import SettingsBar from "./SettingsBar";
 
 function SplitView() {
   const [open, setOpen] = useState(false);
@@ -39,13 +40,13 @@ function SplitView() {
       var img = document.images[0];
       var url = img.src.replace(
         /^data:image\/[^;]+/,
-        "data:application/octet-stream"
+        "data:application/octet-stream",
       );
 
       var downloadLink = document.createElement("a");
       downloadLink.href = url;
       var filename_input = document.getElementById(
-        "image_file_name"
+        "image_file_name",
       ) as HTMLInputElement;
       downloadLink.download = filename_input.value ?? "graph.png";
 
@@ -74,7 +75,7 @@ function SplitView() {
 
   const handleClose = (
     event: React.SyntheticEvent | Event,
-    reason?: SnackbarCloseReason
+    reason?: SnackbarCloseReason,
   ) => {
     if (reason === "clickaway") {
       return;
@@ -146,7 +147,7 @@ function SplitView() {
               <Box sx={{ padding: "16px" }}>
                 {activeTab === ChartType.pie && <SettingsPie />}
                 {activeTab === ChartType.normStacked && <SettingsNormChart />}
-                {activeTab === ChartType.bar && <span>todo</span>}
+                {activeTab === ChartType.bar && <SettingsBar />}
               </Box>
             </Paper>
           </Box>

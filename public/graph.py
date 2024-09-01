@@ -69,6 +69,26 @@ def generate_graph_pie(e):
     display(plt, target="graph_output", append=False)
     display(tikzplotlib.get_tikz_code(), target="tikz_output", append=False)
 
+def generate_graph_bar(e):
+    file = string_to_int(document.getElementById("file_1_form_control").getElementsByTagName("input")[0].value)
+    name = document.getElementById("file_1_name").value
+
+    ignore_every_second_column = document.getElementById("ignore_every_second_column").checked
+
+    storage = json.loads(ls.getItem("persist:root"))
+    csv_string = StringIO(json.loads(storage["files"])[file]["txt"])
+    df = pd.read_csv(csv_string, sep=",")
+
+    if ignore_every_second_column:
+        df = clean_df(df)
+
+    category_names = ["Never heard of it", "Not at all", "A little", "Some", "Much", "Very Much"]
+    counted = count_values_out_of_100(df, df.columns)
+    # plt.show()
+    bar_chart(counted, category_names, False)
+    display(plt, target="graph_output", append=False)
+    display(tikzplotlib.get_tikz_code(), target="tikz_output", append=False)
+
 def remove_last_dot_number(s):
     # Check if the last character is a digit or
     # Check if the string is not empty and has at least two characters
@@ -199,6 +219,33 @@ def pie_chart(results, category_names, show_numbers):
             idx = 3 * i + j
             ax[i][j].set_title(labels[idx], fontsize='small')
             ax[i][j].pie(data[idx], colors=category_colors_hex)
+
+    fig.legend(category_names, ncol=len(category_names),
+              loc='upper center', fontsize='small')
+
+def bar_chart(results, category_names, show_numbers):
+    labels = list(results.keys()) # logical lines etc
+    data = np.array(list(results.values()))
+    category_colors = plt.colormaps['RdYlGn'](
+        np.linspace(0.15, 0.85, data.shape[1]))
+    category_colors_hex = [mpl.colors.rgb2hex(x, keep_alpha=False) for x in category_colors]
+
+    x = np.arange(len(labels))  # the label locations
+    width_factor = 0.9 # how much space between the bar groupings (0.1 a lot of space, 0.9 very little space)
+    width = width_factor * (1.5 * (1 / len(labels)))  # the width of one bar
+
+    fig, ax = plt.subplots()
+    ax.grid(zorder=0, axis='y')
+    for i, category in enumerate(category_names): # for never heard of it etc
+        category_data = [x[i] for x in data]
+        x_position = x + width * len(category_names) / 2 - width / 2 - width * i
+        ax.bar(x_position, category_data, width, label=category, color=category_colors[i], zorder=2)
+
+    ax.set_xticks(x)
+    ax.set_xticklabels(labels, rotation=15, fontsize='xx-small')
+    # ax.set_yticklabels([f'{x:g}%' for x in ax.get_yticks()])
+    # ax.set_ylabel('Scores')
+    # ax.set_title('Scores by group and gender')
 
     fig.legend(category_names, ncol=len(category_names),
               loc='upper center', fontsize='small')
