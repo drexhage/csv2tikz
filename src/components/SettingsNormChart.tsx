@@ -1,6 +1,7 @@
 import { Box, Button, Stack, Typography, Checkbox } from "@mui/material";
 import EqualizerIcon from "@mui/icons-material/Equalizer";
 import FileCard from "./FileCard";
+import Legend from "./Legend";
 
 function SettingsNormChart() {
   return (
@@ -15,6 +16,7 @@ function SettingsNormChart() {
         />
         <Typography>Ignore every second column</Typography>
       </Stack>
+      <Legend indices={[0, 1]} />
       <Box sx={{ m: 2, alignSelf: "center" }}>
         <Button
           variant="outlined"

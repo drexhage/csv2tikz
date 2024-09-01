@@ -199,6 +199,8 @@ function applySlicerColumns(slicerColumns: SlicerColumns, headers: string[], val
 
 export const selectTable = (state: RootState) => state.table;
 
+export const selectFiles = (state: RootState) => state.table.files;
+
 export const {
   setNormalize,
   setTable,

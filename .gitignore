@@ -24,6 +24,7 @@ yarn-error.log*
 
 # Jupyter
 /.virtual_documents
+/public/.virtual_documents
 /public/.ipynb_checkpoints
 /public/solo.csv
 /public/group.csv
@@ -32,3 +33,4 @@ yarn-error.log*
 /public/HorizontalStackBarChart.ipynb
 /public/Untitled.ipynb
 /public/Untitled1.ipynb
+/public/categories.ipynb
