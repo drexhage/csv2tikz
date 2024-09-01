@@ -2,12 +2,14 @@ import {
   Button,
   Grid,
   Paper,
-  Skeleton,
   Stack,
   Typography,
 } from "@mui/material";
 import { CopyAll } from "@mui/icons-material";
 import DownloadIcon from "@mui/icons-material/Download";
+import SyntaxHighlighter from "react-syntax-highlighter";
+import { arduinoLight } from "react-syntax-highlighter/dist/esm/styles/hljs";
+import { useState } from "react";
 
 function OutputTikz() {
   const downloadText = () => {
@@ -22,6 +24,14 @@ function OutputTikz() {
     downloadLink.click();
     document.body.removeChild(downloadLink);
   };
+
+  const [text, setText] = useState("");
+  const targetNode = document.getElementById("tikz_output")!;
+  const config = { attributes: true, childList: true, subtree: true };
+  const observer = new MutationObserver((target) => {
+    setText(target[0].target.textContent!);
+  });
+  observer.observe(targetNode, config);
 
   return (
     <Grid item xs={12}>
@@ -40,8 +50,9 @@ function OutputTikz() {
                 mb: 1,
               }}
             >
-              <Skeleton variant="rounded" height={"100%"} />
-              <code id="tikz_output"></code>
+              <SyntaxHighlighter language="latex" style={arduinoLight}>
+                {text}
+              </SyntaxHighlighter>
             </Paper>
           </Grid>
           <Grid item xs={2}>
