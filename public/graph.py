@@ -243,7 +243,7 @@ def bar_chart(results, category_names, show_numbers):
 
     ax.set_xticks(x)
     ax.set_xticklabels(labels, rotation=15, fontsize='xx-small')
-    # ax.set_yticklabels([f'{x:g}%' for x in ax.get_yticks()])
+    ax.set_yticklabels([f'{x:g}%' for x in ax.get_yticks()])
     # ax.set_ylabel('Scores')
     # ax.set_title('Scores by group and gender')
 

@@ -10,68 +10,26 @@ import {
   Divider,
   Grid,
   Paper,
-  Skeleton,
   Snackbar,
-  Stack,
   Tab,
   Tabs,
-  TextField,
   Toolbar,
   Typography,
 } from "@mui/material";
 import { useState } from "react";
 import SettingsNormChart from "./SettingsNormChart";
-import DownloadIcon from "@mui/icons-material/Download";
-import { Analytics, CopyAll, ClearAll } from "@mui/icons-material";
+import { Analytics, ClearAll } from "@mui/icons-material";
 import SettingsPie from "./SettingsPie";
 import { useAppDispatch } from "../app/hooks";
 import { unloadTable } from "../features/table/tableSlice";
 import UploadButton from "./UploadButton";
 import SettingsBar from "./SettingsBar";
+import OutputTikz from "./OutputTikz";
+import OutputImage from "./OutputImage";
 
 function SplitView() {
   const [open, setOpen] = useState(false);
   let dispatch = useAppDispatch();
-
-  const downloadImage = () => {
-    if (document.images.length === 0) {
-      setOpen(true);
-    } else {
-      var img = document.images[0];
-      var url = img.src.replace(
-        /^data:image\/[^;]+/,
-        "data:application/octet-stream",
-      );
-
-      var downloadLink = document.createElement("a");
-      downloadLink.href = url;
-      var filename_input = document.getElementById(
-        "image_file_name",
-      ) as HTMLInputElement;
-      downloadLink.download = filename_input.value ?? "graph.png";
-
-      document.body.appendChild(downloadLink);
-      downloadLink.click();
-      document.body.removeChild(downloadLink);
-    }
-  };
-
-  const downloadText = () => {
-    if (document.images.length === 0) {
-      setOpen(true);
-    } else {
-      var downloadLink = document.createElement("a");
-      var txt = document.getElementById("tikz_output")?.children[0]
-        .innerHTML as string;
-      downloadLink.href =
-        "data:text/plain;charset=utf-8," + encodeURIComponent(txt);
-      downloadLink.download = "tikz_code.txt";
-
-      document.body.appendChild(downloadLink);
-      downloadLink.click();
-      document.body.removeChild(downloadLink);
-    }
-  };
 
   const handleClose = (
     event: React.SyntheticEvent | Event,
@@ -108,7 +66,6 @@ function SplitView() {
   }
   let [activeTab, setActiveTab] = useState(ChartType.normStacked);
 
-  // TODO: relies on 'vh' which will not work well when adding a header
   return (
     <Box>
       <AppBar>
@@ -170,33 +127,7 @@ function SplitView() {
                   alignItems: "center",
                 }}
               >
-                <Stack spacing={2}>
-                  <Box id="graph_output">
-                    <Skeleton variant="rounded" width={900} height={480} />
-                  </Box>
-                  <Stack
-                    spacing={2}
-                    direction={"row"}
-                    sx={{ alignSelf: "center" }}
-                  >
-                    <TextField
-                      id={"image_file_name"}
-                      label="Image file name"
-                      variant="outlined"
-                      size="small"
-                      defaultValue={"graph.png"}
-                    />
-                    <Box sx={{ alignSelf: "center" }}>
-                      <Button
-                        onClick={downloadImage}
-                        variant="outlined"
-                        startIcon={<DownloadIcon />}
-                      >
-                        Download image
-                      </Button>
-                    </Box>
-                  </Stack>
-                </Stack>
+                <OutputImage onDownloadError={() => setOpen(true)} />
               </Box>
               <Box
                 sx={{
@@ -205,47 +136,7 @@ function SplitView() {
                   alignItems: "center",
                 }}
               >
-                <Grid item xs={12}>
-                  <Paper sx={{ m: "1vh" }} variant="outlined">
-                    <Typography sx={{ m: 1 }}>Output:</Typography>
-                    <Grid container>
-                      <Grid item xs={10}>
-                        <Paper
-                          id="tikz_output"
-                          variant="outlined"
-                          sx={{
-                            p: 1,
-                            height: "100px",
-                            overflow: "auto",
-                            ml: 1,
-                            mb: 1,
-                          }}
-                        >
-                          <Skeleton variant="rounded" height={"100%"} />
-                        </Paper>
-                      </Grid>
-                      <Grid item xs={2}>
-                        <Stack sx={{ height: "100%" }}>
-                          <Button
-                            variant="outlined"
-                            sx={{ m: "auto" }}
-                            onClick={downloadText}
-                            startIcon={<DownloadIcon />}
-                          >
-                            Download
-                          </Button>
-                          <Button
-                            variant="outlined"
-                            sx={{ m: "auto" }}
-                            startIcon={<CopyAll />}
-                          >
-                            Copy
-                          </Button>
-                        </Stack>
-                      </Grid>
-                    </Grid>
-                  </Paper>
-                </Grid>
+                <OutputTikz />
               </Box>
             </Paper>
           </Box>
