@@ -41,8 +41,8 @@ def generate_graph_norm(e):
         df_2 = clean_df(df_2)
 
     items = list(filter(lambda x: x in df_1.columns, df_2.columns))
-    counted_1 = count_values_out_of_100(df_1, items)
-    counted_2 = count_values_out_of_100(df_2, items)
+    counted_1 = count_values(df_1, items)
+    counted_2 = count_values(df_2, items)
     norm_chart(counted_1,counted_2, False, [name_1, name_2])
 
     display(plt, target="graph_output", append=False)
@@ -61,7 +61,7 @@ def generate_graph_pie(e):
     if ignore_every_second_column:
         df = clean_df(df)
 
-    counted = count_values_out_of_100(df, df.columns)
+    counted = count_values(df, df.columns)
     # plt.show()
     pie_chart(counted, False)
     display(plt, target="graph_output", append=False)
@@ -72,6 +72,7 @@ def generate_graph_bar(e):
     name = document.getElementById("file_1_name").value
 
     ignore_every_second_column = document.getElementById("ignore_every_second_column").checked
+    use_absolute_values = document.getElementById("use_absolute_values").checked
 
     storage = json.loads(ls.getItem("persist:root"))
     csv_string = StringIO(json.loads(storage["files"])[file]["txt"])
@@ -80,9 +81,8 @@ def generate_graph_bar(e):
     if ignore_every_second_column:
         df = clean_df(df)
 
-    counted = count_values_out_of_100(df, df.columns)
-    # plt.show()
-    bar_chart(counted, False)
+    counted = count_values(df, df.columns, absolute=use_absolute_values)
+    bar_chart(counted, use_absolute_values)
     display(plt, target="graph_output", append=False)
     display(tikzplotlib.get_tikz_code(), target="tikz_output", append=False)
 
@@ -120,12 +120,13 @@ def get_category_names():
     return category_names
 
 # for every column we need to count all values and determine how many out of 100 are
-def count_values_out_of_100(df, items):
+def count_values(df, items, absolute=False):
     counted_values = {}
     ordering_list = get_ordering_list()
     for item in items:
         values, counts = np.unique(df[item].tolist(), return_counts=True)
-        counts = (counts / sum(counts)) * 100
+        if not absolute:
+            counts = (counts / sum(counts)) * 100
         
         for x in [1.0,2.0,3.0,4.0,5.0,10.0]:
             if x not in values:
@@ -229,7 +230,7 @@ def pie_chart(results, show_numbers):
     fig.legend(category_names, ncol=len(category_names),
               loc='upper center', fontsize='small')
 
-def bar_chart(results, show_numbers):
+def bar_chart(results, use_absolute_values):
     category_names = get_category_names()
     labels = list(results.keys()) # logical lines etc
     data = np.array(list(results.values()))
@@ -250,7 +251,8 @@ def bar_chart(results, show_numbers):
 
     ax.set_xticks(x)
     ax.set_xticklabels(labels, rotation=15, fontsize='xx-small')
-    ax.yaxis.set_major_formatter(mpl.ticker.PercentFormatter())
+    if not use_absolute_values:
+        ax.yaxis.set_major_formatter(mpl.ticker.PercentFormatter())
     # ax.set_ylabel('Scores')
     # ax.set_title('Scores by group and gender')
 
