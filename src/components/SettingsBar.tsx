@@ -15,6 +15,10 @@ function SettingsBar() {
         />
         <Typography>Ignore every second column</Typography>
       </Stack>
+      <Stack direction="row" alignItems="center">
+        <Checkbox id="use_absolute_values" sx={{ mr: 1 }} />
+        <Typography>Absolute values</Typography>
+      </Stack>
       <Legend />
       <Box sx={{ m: 2, alignSelf: "center" }}>
         <Button

@@ -27,14 +27,16 @@ function OutputImage(props: { onDownloadError: () => void }) {
 
   return (
     <Stack spacing={2} sx={{ width: "100%" }}>
-      <Box id="graph_output" sx={{ width: "100%" }}>
-        <Skeleton
-          variant="rounded"
-          width={900}
-          height={480}
-          sx={{ mt: 1, maxWidth: "100%", marginX: "auto" }}
-        />
-      </Box>
+      <center>
+        <Box id="graph_output" sx={{ width: "100%" }}>
+          <Skeleton
+            variant="rounded"
+            width={900}
+            height={480}
+            sx={{ mt: 1, maxWidth: "100%", marginX: "auto" }}
+          />
+        </Box>
+      </center>
       <Stack spacing={2} direction={"row"} sx={{ alignSelf: "center" }}>
         <TextField
           id={"image_file_name"}

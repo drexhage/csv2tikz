@@ -7,21 +7,19 @@ import { useState } from "react";
 import { observeNode } from "../app/observe";
 
 function OutputTikz() {
+  const [text, setText] = useState("");
+  observeNode("tikz_output", (x) => setText(x.target.textContent!));
+
   const downloadText = () => {
     var downloadLink = document.createElement("a");
-    var txt = document.getElementById("tikz_output")?.children[0]
-      .innerHTML as string;
     downloadLink.href =
-      "data:text/plain;charset=utf-8," + encodeURIComponent(txt);
+      "data:text/plain;charset=utf-8," + encodeURIComponent(text);
     downloadLink.download = "tikz_code.txt";
 
     document.body.appendChild(downloadLink);
     downloadLink.click();
     document.body.removeChild(downloadLink);
   };
-
-  const [text, setText] = useState("");
-  observeNode("tikz_output", (x) => setText(x.target.textContent!));
 
   return (
     <Grid item xs={12}>
