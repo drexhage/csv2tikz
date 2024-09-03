@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Stack,
   Typography,
@@ -19,55 +19,55 @@ import {
 import { DragHandle } from "@mui/icons-material";
 
 function Legend() {
-  let files = useAppSelector(selectFiles);
-  const valueLabelMap = new Map();
+  const files = useAppSelector(selectFiles);
+  const [data, setData] = useState<string[][]>([]);
 
-  let indices = [];
-  if (!!document.getElementById("file_1_form_control")) {
-    let index = document
-      ?.getElementById("file_1_form_control")
-      ?.getElementsByTagName("input")[0].value;
-    if (!!index && +index >= 0) {
-      indices.push(+index);
-    }
-  }
-  if (!!document.getElementById("file_2_form_control")) {
-    let index = document
-      ?.getElementById("file_2_form_control")
-      ?.getElementsByTagName("input")[0].value;
-    if (!!index && +index >= 0) {
-      indices.push(+index);
-    }
-  }
-
-  for (let i in indices) {
-    let rows = files[i].txt.trim().split("\n");
-    rows.splice(0, 1);
-
-    rows.forEach((row) => {
-      const columns = row.split(",");
-
-      for (let i = 0; i < columns.length; i += 2) {
-        const label = columns[i];
-        const value = columns[i + 1];
-
-        if (value !== "" && !valueLabelMap.has(value)) {
-          valueLabelMap.set(value, label);
-        }
+  useEffect(() => {
+    const valueLabelMap = new Map();
+    let indices = [];
+    if (!!document.getElementById("file_1_form_control")) {
+      let index = document
+        ?.getElementById("file_1_form_control")
+        ?.getElementsByTagName("input")[0].value;
+      if (!!index && +index >= 0) {
+        indices.push(+index);
       }
-    });
-  }
+    }
+    if (!!document.getElementById("file_2_form_control")) {
+      let index = document
+        ?.getElementById("file_2_form_control")
+        ?.getElementsByTagName("input")[0].value;
+      if (!!index && +index >= 0) {
+        indices.push(+index);
+      }
+    }
 
-  const distinctValuesAndLabels = Array.from(valueLabelMap);
-  distinctValuesAndLabels.sort();
+    for (let i in indices) {
+      let rows = files[i].txt.trim().split("\n");
+      rows.splice(0, 1);
 
-  // --------
+      rows.forEach((row) => {
+        const columns = row.split(",");
 
-  const [data, setData] = useState(distinctValuesAndLabels);
+        for (let i = 0; i < columns.length; i += 2) {
+          const label = columns[i];
+          const value = columns[i + 1];
+
+          if (value !== "" && !valueLabelMap.has(value)) {
+            valueLabelMap.set(value, label);
+          }
+        }
+      });
+    }
+
+    const distinctValuesAndLabels = Array.from(valueLabelMap);
+    distinctValuesAndLabels.sort();
+    console.log(distinctValuesAndLabels);
+    setData(distinctValuesAndLabels);
+  }, [files]);
 
   const handleOnDragEnd = (result: DropResult) => {
-    const { destination, source, draggableId } = result;
-    console.log("Result:", result);
+    const { destination, source } = result;
 
     if (!destination) return;
 

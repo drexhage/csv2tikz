@@ -1,4 +1,4 @@
-import { Button, Grid, Paper, Stack, Typography } from "@mui/material";
+import { Button, Grid, Paper, Typography } from "@mui/material";
 import { CopyAll } from "@mui/icons-material";
 import DownloadIcon from "@mui/icons-material/Download";
 import SyntaxHighlighter from "react-syntax-highlighter";
@@ -28,7 +28,6 @@ function OutputTikz() {
         <Grid container>
           <Grid item xs={12}>
             <Paper
-              // id="tikz_output"
               variant="outlined"
               sx={{
                 p: 1,
