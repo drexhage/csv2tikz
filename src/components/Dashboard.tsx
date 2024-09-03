@@ -2,7 +2,6 @@ import { Button, Stack } from "@mui/material";
 import { useAppDispatch } from "../app/hooks";
 import { useRef } from "react";
 import { loadTable } from "../features/table/tableSlice";
-import GraphView from "./GraphView";
 
 const Dashboard = () => {
   const inputFile = useRef<HTMLInputElement>(null);
@@ -47,7 +46,6 @@ const Dashboard = () => {
         style={{ display: "none" }}
         onChange={loadFile}
       />
-      <GraphView />
     </Stack>
   );
 };

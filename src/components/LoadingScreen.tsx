@@ -1,19 +1,15 @@
-import { Box, CircularProgress } from "@mui/material";
+import { CircularProgress, Stack } from "@mui/material";
 
 function LoadingScreen() {
   return (
-    <Box
-      display="flex"
-      flexDirection="column"
+    <Stack
+      direction="row"
+      justifyContent="center"
       alignItems="center"
-      justifyItems="center"
-      justifyContent={"center"}
-      justifySelf="center"
-      width="100%"
-      height="700px"
+      sx={{ width: 1, height: "100vh" }}
     >
       <CircularProgress />
-    </Box>
+    </Stack>
   );
 }
 

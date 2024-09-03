@@ -19,6 +19,7 @@ export const tableSlice = createSlice({
       state,
       action: PayloadAction<{ txt: string; fileName: string }>,
     ) => {
+      state.loaded = true;
       state.files.push({
         fileName: action.payload.fileName,
         txt: action.payload.txt,
