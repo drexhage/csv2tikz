@@ -2,11 +2,24 @@ import { Box, Button, Stack, Typography, Checkbox } from "@mui/material";
 import EqualizerIcon from "@mui/icons-material/Equalizer";
 import FileCard from "./FileCard";
 import Legend from "./Legend";
+import { useState } from "react";
 
 function SettingsBar() {
+  let [compare, setCompare] = useState(false);
+
   return (
     <Stack spacing={2}>
-      <FileCard nr={1} default={0} ignoreNr />
+      <FileCard nr={1} default={0} />
+      <Stack direction="row" alignItems="center">
+        <Checkbox
+          id="compare_with_file"
+          sx={{ mr: 1 }}
+          checked={compare}
+          onChange={(_, c) => setCompare(c)}
+        />
+        <Typography>Compare</Typography>
+      </Stack>
+      {compare && <FileCard nr={2} default={-1} />}
       <Stack direction="row" alignItems="center">
         <Checkbox
           id="ignore_every_second_column"

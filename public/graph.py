@@ -68,21 +68,39 @@ def generate_graph_pie(e):
     display(tikzplotlib.get_tikz_code(), target="tikz_output", append=False)
 
 def generate_graph_bar(e):
-    file = string_to_int(document.getElementById("file_1_form_control").getElementsByTagName("input")[0].value)
-    name = document.getElementById("file_1_name").value
-
+    storage = json.loads(ls.getItem("persist:root"))
     ignore_every_second_column = document.getElementById("ignore_every_second_column").checked
     use_absolute_values = document.getElementById("use_absolute_values").checked
+    compare_with_file = document.getElementById("compare_with_file").checked
 
-    storage = json.loads(ls.getItem("persist:root"))
-    csv_string = StringIO(json.loads(storage["files"])[file]["txt"])
-    df = pd.read_csv(csv_string, sep=",")
+    file_1 = string_to_int(document.getElementById("file_1_form_control").getElementsByTagName("input")[0].value)
+    name_1 = document.getElementById("file_1_name").value
+
+    if compare_with_file:
+        file_2 = string_to_int(document.getElementById("file_2_form_control").getElementsByTagName("input")[0].value)
+        name_2 = document.getElementById("file_2_name").value
+
+    csv_string_1 = StringIO(json.loads(storage["files"])[file_1]["txt"])
+    df_1 = pd.read_csv(csv_string_1, sep=",")
+
+    if compare_with_file:
+        csv_string_2 = StringIO(json.loads(storage["files"])[file_2]["txt"])
+        df_2 = pd.read_csv(csv_string_2, sep=",")
 
     if ignore_every_second_column:
-        df = clean_df(df)
+        df_1 = clean_df(df_1)
+        if compare_with_file:
+            df_2 = clean_df(df_2)
 
-    counted = count_values(df, df.columns, absolute=use_absolute_values)
-    bar_chart(counted, use_absolute_values)
+    counted_1 = count_values(df_1, df_1.columns, absolute=use_absolute_values)
+    if compare_with_file:
+        counted_2 = count_values(df_2, df_2.columns, absolute=use_absolute_values)
+
+    if compare_with_file:
+        bar_chart_compare(counted_1, counted_2, use_absolute_values, [name_1, name_2])
+    else:
+        bar_chart(counted_1, use_absolute_values)
+
     display(plt, target="graph_output", append=False)
     display(tikzplotlib.get_tikz_code(), target="tikz_output", append=False)
 
@@ -219,8 +237,6 @@ def pie_chart(results, show_numbers):
     category_colors_hex = [mpl.colors.rgb2hex(x, keep_alpha=False) for x in category_colors]
 
     fig, ax = plt.subplots(3, 3, subplot_kw={'aspect':'equal'})
-    y = np.array([35, 25, 25, 15])
-    print(labels)
     for i in range(3):
         for j in range(3):
             idx = 3 * i + j
@@ -253,6 +269,37 @@ def bar_chart(results, use_absolute_values):
     ax.set_xticklabels(labels, rotation=15, fontsize='xx-small')
     if not use_absolute_values:
         ax.yaxis.set_major_formatter(mpl.ticker.PercentFormatter())
+    # ax.set_ylabel('Scores')
+    # ax.set_title('Scores by group and gender')
+
+    fig.legend(category_names, ncol=len(category_names),
+              loc='upper center', fontsize='small')
+
+def bar_chart_compare(results_1, results_2, use_absolute_values, names):
+    category_names = get_category_names()
+    labels = list(results_1.keys())
+    data_1 = np.array(list(results_1.values()))
+    data_2 = np.array(list(results_2.values()))
+    category_colors = plt.colormaps['RdYlGn'](
+        np.linspace(0.15, 0.85, data_1.shape[1]))
+    category_colors_hex = [mpl.colors.rgb2hex(x, keep_alpha=False) for x in category_colors]
+
+    x = np.arange(len(labels))  # the label locations
+    width_factor = 0.9 # how much space between the bar groupings (0.1 a lot of space, 0.9 very little space)
+    width = width_factor * (1.5 * (1 / len(labels)))  # the width of one bar
+
+    fig, ax = plt.subplots(1, 2)
+    # ax.grid(zorder=0, axis='y')
+    data = [data_1, data_2]
+    for j in range(2):
+        for i, category in enumerate(category_names): # for never heard of it etc
+            category_data = [x[i] for x in data[j]]
+            x_position = x + width * len(category_names) / 2 - width / 2 - width * i
+            ax[j].bar(x_position, category_data, width, label=category, color=category_colors[i], zorder=2)
+        ax[j].set_xticks(x)
+        ax[j].set_title(names[j])
+        ax[j].set_xticklabels(labels, rotation=20, fontsize='xx-small')
+
     # ax.set_ylabel('Scores')
     # ax.set_title('Scores by group and gender')
 
