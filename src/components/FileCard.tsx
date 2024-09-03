@@ -20,7 +20,6 @@ interface FileCardProps {
 function FileCard(props: FileCardProps) {
   const files = store.getState().table.files;
   const title = props.ignoreNr ? "File" : `File ${props.nr}`;
-  console.log("FileCard:", files);
 
   return (
     <Card sx={{ minWidth: "35%" }} variant="outlined">

@@ -1,7 +1,7 @@
 import { Button, Stack } from "@mui/material";
 import { useAppDispatch } from "../app/hooks";
 import { useRef } from "react";
-import { loadTable, transformFiles } from "../features/table/tableSlice";
+import { loadTable } from "../features/table/tableSlice";
 import GraphView from "./GraphView";
 
 const Dashboard = () => {
@@ -17,7 +17,6 @@ const Dashboard = () => {
         const txt = e.target?.result?.toString()!;
         let fileName = files[i].name;
         dispatch(loadTable({ txt, fileName }));
-        dispatch(transformFiles());
       };
       reader.readAsText(files[i]);
     }

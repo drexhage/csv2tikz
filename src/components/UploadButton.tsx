@@ -3,7 +3,7 @@ import { Button } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { useAppDispatch } from "../app/hooks";
 import { useRef } from "react";
-import { loadTable, transformFiles } from "../features/table/tableSlice";
+import { loadTable } from "../features/table/tableSlice";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -30,7 +30,6 @@ export default function UploadButton() {
         const txt = e.target?.result?.toString()!;
         let fileName = files[i].name;
         dispatch(loadTable({ txt, fileName }));
-        dispatch(transformFiles());
       };
       reader.readAsText(files[i]);
     }
